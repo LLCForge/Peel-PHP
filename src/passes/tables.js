@@ -135,9 +135,18 @@ export async function run(code, ctx) {
       if (fnOf(r.node) === null && r.node.loc.start.offset < end) { bad = true; break; }
     }
     if (bad) continue;
+    let all = true;
     for (const r of reads) {
       const e = replacement(r.node, table);
-      if (e) { edits.push(e); n++; }
+      if (e) { edits.push(e); n++; } else all = false;
+    }
+    // tüm okumalar değiştiyse ve tablo bütün olarak kullanılmıyorsa: tanım ve "global T;" bildirimleri de gider
+    if (all && !recs.some((r) => classify(r.node) === 'readwhole')) {
+      edits.push({ start: stmt.loc.start.offset, end: stmt.loc.end.offset, text: '' });
+      walk(ast, (g) => {
+        if (g.kind === 'global' && g.items.length === 1 && g.items[0].name === name) edits.push({ start: g.loc.start.offset, end: g.loc.end.offset, text: '' });
+        return true;
+      });
     }
   }
   if (!edits.length) return code;

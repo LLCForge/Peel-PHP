@@ -13,5 +13,7 @@ import * as strings from '../passes/strings.js';
 import * as rename from '../passes/rename.js';
 import * as tables from '../passes/tables.js';
 import * as callees from '../passes/callees.js';
+import * as prege from '../passes/prege.js';
+import * as banner from '../passes/banner.js';
 
-export const PASSES = [layers, guards, gotoFlow, fold, strings, propagate, tables, callees, dead, integrity, inline, unused, rename, tags];
+export const PASSES = [layers, guards, gotoFlow, fold, strings, prege, propagate, tables, callees, dead, integrity, inline, unused, rename, banner, tags];

@@ -89,8 +89,8 @@ export function expandLayers(code, trace) {
     const payloadAst = tryParse(EVAL_PREFIX + payload)?.ast;
     if (!payloadAst) return null;
     const ret = topLevelReturn(payloadAst);
-    // include/require: kayıt "?>" + dosya içeriğidir; deyim olarak eval gibi yerine konur
-    if (kind === 'eval' || kind === 'assert' || INCLUDES.has(kind)) {
+    // include/require: kayıt "?>" + dosya içeriğidir; preg_replace /e: tek eşleşmede çalışan kod; deyim olarak eval gibi
+    if (kind === 'eval' || kind === 'assert' || kind === 'preg_replace' || INCLUDES.has(kind)) {
       // deyim olarak kullanılan eval (@eval(...) dahil): kod olduğu gibi yerine konur
       const stmt = parent?.kind === 'expressionstatement' ? parent : parent?.kind === 'silent' && grand?.kind === 'expressionstatement' ? grand : null;
       if (stmt && ret < 0) {
@@ -105,7 +105,7 @@ export function expandLayers(code, trace) {
         return { start, end, text: `\n${payload.trim()}\n${tail}` };
       }
       // değeri kullanılan eval: kod tek bir "return X;" ise ifade X olur
-      if (!INCLUDES.has(kind) && ret === 0 && payloadAst.children.length === 1 && payloadAst.children[0].expr) {
+      if (!INCLUDES.has(kind) && kind !== 'preg_replace' && ret === 0 && payloadAst.children.length === 1 && payloadAst.children[0].expr) {
         const r = payloadAst.children[0].expr;
         const [s, e] = span(r);
         const expr = (EVAL_PREFIX + payload).slice(s, e);

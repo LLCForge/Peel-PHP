@@ -3,7 +3,7 @@
 //   npm run bench yakpro        adı filtreyi içerenler
 //   npm run bench -- --show ad  tek örneğin girdisini ve çıktısını yazdırır (diske düz yazılmaz)
 // Her satır: davranış (çözülmüş kodun sandbox stdout'u özgün kaynağınkiyle aynı mı), beklenen özgün literallerin
-// kaçı çıktıda (yorumlar hariç), kalan eval/katman sayısı (ilk → son), goto sayısı, süre.
+// kaçı çıktıda (yorumlar hariç), kalan eval/katman sayısı (ilk → son), goto sayısı, okunmaz ad sayısı, süre.
 // Gizlenmiş programın kendisi özgünden farklı yazıyorsa (araç hatası) beklenen çıktı gizlenmiş kodunkidir: "self".
 import { readdirSync, readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { createNodeSandbox } from '../src/sandbox/node-host.js';
@@ -12,6 +12,7 @@ import { deobfuscate } from '../src/core/pipeline.js';
 import { tokens } from '../src/core/parse.js';
 import { decodeFixture, encodeFixture } from './fixture-codec.js';
 import { SOURCES } from './bench/sources.js';
+import { unreadableSet } from '../src/core/names.js';
 
 const dir = new URL('./bench/', import.meta.url);
 const outDir = new URL('./bench-out/', import.meta.url);
@@ -29,6 +30,12 @@ function codeOnly(code) {
     return code;
   }
 }
+// okunmaz kullanıcı adları (değişken, fonksiyon, sınıf, üye): yaklaşık, düzenli ifadeyle toplanır
+const countNames = (code) => {
+  const names = new Set([...codeOnly(code).matchAll(/\$([A-Za-z_\x80-\xff][\w\x80-\xff]*)|\bfunction\s+&?([A-Za-z_\x80-\xff][\w\x80-\xff]*)|\b(?:class|interface|trait)\s+([A-Za-z_\x80-\xff][\w\x80-\xff]*)|->([A-Za-z_\x80-\xff][\w\x80-\xff]*)/g)]
+    .map((m) => m[1] ?? m[2] ?? m[3] ?? m[4]).filter((n) => !/^(this|GLOBALS|_GET|_POST|_COOKIE|_REQUEST|_SERVER|_FILES|_ENV|_SESSION|__\w+)$/.test(n)));
+  return unreadableSet([...names]).size;
+};
 const countGoto = (code) => {
   try { return tokens(code).filter((t) => Array.isArray(t) && t[0] === 'T_GOTO').length; } catch { return NaN; }
 };
@@ -68,6 +75,7 @@ try {
       needles: `${found.length}/${src.needles.length}`,
       evals: `${evals(r.trace.first)}→${evals(r.trace.final)}`,
       goto: `${countGoto(input)}→${countGoto(r.code)}`,
+      names: `${countNames(input)}→${countNames(r.code)}`,
       kb: `${(input.length / 1024).toFixed(1)}→${(r.code.length / 1024).toFixed(1)}`,
       ms,
       rollbacks: logs.filter((l) => l.includes('geri alındı')).length,

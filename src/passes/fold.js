@@ -95,6 +95,8 @@ function isPlain(n) {
   if (n.kind === 'boolean' || n.kind === 'nullkeyword') return true;
   if (n.kind === 'number') return /^-?\d+(\.\d+)?$/.test(String(n.value));
   if (n.kind === 'string') return !n.isDoubleQuote || !/\\/.test(n.raw ?? '');
+  // -1: phpLiteral "(-1)" yazar, ayrıştırıcı parantezi düğüme katmaz → her turda yeniden sarılırdı
+  if (n.kind === 'unary' && n.type === '-' && n.what?.kind === 'number') return isPlain(n.what);
   return false;
 }
 

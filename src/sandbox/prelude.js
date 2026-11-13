@@ -64,6 +64,47 @@ function __peel_rec($code, $site) {
   return __peel_instrument($code, 'e' . $id . '.', false);
 }
 
+// preg_replace /e (PHP < 5.5): değiştirme metni her eşleşmede PHP kodu olarak çalışır. Tek eşleşmede çalışan kod
+// (geri başvurular yerine konmuş, PHP'nin yaptığı gibi addslashes ile) eval gibi kaydedilir; birden çok eşleşmede
+// ikinci bir işaret kaydı eklenir ki site tek koda indirgenip satır içine alınmasın.
+function __peel_preg($site, $pat, $rep, $subj, $limit = -1, &$count = null) {
+  if (is_string($pat) && is_string($rep) && preg_match('/^([^a-zA-Z0-9\s\\\\])(.*)\1([a-zA-Z]*)$/s', $pat, $m) && strpos($m[3], 'e') !== false) {
+    $p = $m[1] . $m[2] . $m[1] . str_replace('e', '', $m[3]);
+    $subjects = is_array($subj) ? $subj : array($subj);
+    $codes = array();
+    foreach ($subjects as $sub) {
+      if (@preg_match_all($p, (string) $sub, $all, PREG_SET_ORDER)) foreach ($all as $g) $codes[] = __peel_backref($rep, $g);
+    }
+    foreach (array_slice($codes, 0, 2) as $c) {
+      if (count($GLOBALS['__peel']['evals']) < 5000) $GLOBALS['__peel']['evals'][] = array('site' => $site, 'code' => base64_encode($c . ';'));
+    }
+    if (count($codes) >= 2 && $codes[0] === $codes[1]) $GLOBALS['__peel']['evals'][] = array('site' => $site, 'code' => base64_encode('/* peel: çok eşleşme */'));
+  }
+  return preg_replace($pat, $rep, $subj, $limit, $count);
+}
+
+function __peel_backref($r, $g) {
+  $out = '';
+  $n = strlen($r);
+  for ($i = 0; $i < $n; $i++) {
+    $c = $r[$i];
+    if (($c === '\\' || $c === '$') && $i + 1 < $n && strpos('0123456789', $r[$i + 1]) !== false) {
+      $k = $r[$i + 1];
+      $i++;
+      if ($i + 1 < $n && strpos('0123456789', $r[$i + 1]) !== false) { $k .= $r[$i + 1]; $i++; }
+      $out .= isset($g[(int) $k]) ? addslashes($g[(int) $k]) : '';
+      continue;
+    }
+    if ($c === '$' && $i + 2 < $n && $r[$i + 1] === '{' && preg_match('/^\$\{(\d+)\}/', substr($r, $i), $mm)) {
+      $out .= isset($g[(int) $mm[1]]) ? addslashes($g[(int) $mm[1]]) : '';
+      $i += strlen($mm[0]) - 1;
+      continue;
+    }
+    $out .= $c;
+  }
+  return $out;
+}
+
 // include/require: çalışma anında yazılan dosyalar (geçici dosyaya yazıp include eden encoder'lar) eval gibi
 // kaydedilir. Kayıt, başına kapanış etiketi eklenmiş içeriktir: eval böyle bir kodu include ile aynı biçimde çalıştırır. Dosyanın kendisi atlanır.
 function __peel_inc($path, $site) {
@@ -201,11 +242,12 @@ function __peel_instrument($src, $prefix, $isFile, $base = 0) {
     // __COMPILER_HALT_OFFSET__ özgün dosyadaki konumu göstermeli (kod kendi dosyasını özgün hâliyle okur)
     if ($haltAt !== null && is_array($t) && $t[0] === T_STRING && strtoupper($t[1]) === '__COMPILER_HALT_OFFSET__') { $out .= '(' . $haltAt . ')'; continue; }
     if (is_array($t) && isset($incs[$t[0]])) { $pending = $incs[$t[0]]; $pendingAt = $at; $out .= $text; continue; }
-    if (is_array($t) && ($t[0] === T_EVAL || ($t[0] === T_STRING && (strtolower($t[1]) === 'assert' || strtolower($t[1]) === 'create_function')))) {
+    if (is_array($t) && ($t[0] === T_EVAL || ($t[0] === T_STRING && (strtolower($t[1]) === 'assert' || strtolower($t[1]) === 'create_function' || strtolower($t[1]) === 'preg_replace')))) {
       $prev = $i > 0 ? $tokens[$i - 1] : null;
-      $isMethod = is_array($prev) && ($prev[0] === T_OBJECT_OPERATOR || $prev[0] === T_DOUBLE_COLON || $prev[0] === T_FUNCTION);
+      $isMethod = is_array($prev) && ($prev[0] === T_OBJECT_OPERATOR || $prev[0] === T_DOUBLE_COLON || $prev[0] === T_FUNCTION || $prev[0] === T_NEW);
       if (!$isMethod) { $pending = ($t[0] === T_EVAL ? 'eval' : strtolower($t[1])); $pendingAt = $at; }
-      $out .= $text;
+      // preg_replace( ... ) → __peel_preg('site', ...): /e değiştirmesiyle çalışan kod kaydedilir
+      $out .= (!$isMethod && $pending === 'preg_replace') ? '__peel_preg' : $text;
       continue;
     }
     if ($pending !== null) {
@@ -218,6 +260,9 @@ function __peel_instrument($src, $prefix, $isFile, $base = 0) {
         if ($pending === 'create_function') {
           $out .= '(';
           $wrap[] = array($depth, 'cf', $site);
+        } elseif ($pending === 'preg_replace') {
+          $out .= "('" . $site . "', ";
+          $wrap[] = array($depth, 'plain', $site);
         } elseif (in_array($pending, $incs, true)) {
           $out .= '(__peel_inc(';
           $wrap[] = array($depth, 'rec', $site);
