@@ -33,12 +33,12 @@ export async function deobfuscate(input, { sandbox, ...options } = {}) {
   return runPipeline(toBstr(input), { ...options, sandbox: await sandboxOf(sandbox) });
 }
 
-/** Çöz + analiz et */
-export async function peel(input, { sandbox, ...options } = {}) {
+/** Çöz + analiz et. Çözme başarısız olsa da (ör. ayrıştırılamayan ticari şifreli dosya) girdi analiz edilir. */
+export async function peel(input, { sandbox, lang = 'tr', ...options } = {}) {
   const src = toBstr(input);
   const r = await runPipeline(src, { ...options, sandbox: await sandboxOf(sandbox) }).catch((e) => ({ error: e.message }));
-  if (r.error) return { ...r, report: null };
-  const report = runAnalyze({ input: src, output: r.code, trace: r.trace, events: r.events, stats: r.stats, version: r.version });
+  if (r.error) return { ...r, code: src, report: runAnalyze({ input: src, output: src, lang }) };
+  const report = runAnalyze({ input: src, output: r.code, trace: r.trace, events: r.events, stats: r.stats, version: r.version, lang });
   return { ...r, report };
 }
 
