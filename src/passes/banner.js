@@ -11,6 +11,9 @@ const KNOWN = [
   /Obfuscated by YAK Pro/i, /yakpro-po/i, /ALOM (Obfuscator|ANTITAMPER)/i, /This script has protected by Alom/i, /PHPKoru/i,
   /PHP Encoder\s*-\s*Free Code Protection Tool/i, /\bFOPO\b|Free Online PHP Obfuscator/i, /Obfuscated by ALOM/i,
   /obfuscator\.io/i, /phpprotect\.info|php-obfuscator\.com|phpobfuscator\.net/i, /Obfuscated (by|with|using) .{0,40}(Obfuscator|Encoder)/i,
+  // encoder'ların her çıktıya eklediği sabit iç yorumlar: PHPkoru alıntı satırı, "PHP Encoder" denetim notu.
+  // Kod bstr'dir (UTF-8 baytları): Türkçe harfler iki bayttır, desende .{1,2} ile eşlenir
+  /Her .{1,2}eyi sana yazd.{1,2}m!\.\. Her .{1,2}eye seni yazd.{1,2}m!\.\./, /Daha g.{1,2}venli bir .{1,2}ekilde yetki kontrol.{1,2} yap/,
 ];
 // yalnızca dosya başlığında (ilk deyimden önce) tanınanlar
 const HEADER = [/\b(protected|encoded|encrypted|obfuscated) (by|with|using)\b/i, /do not (modify|edit|change)/i, /ioncube|sourceguardian|zend ?guard/i];
