@@ -52,12 +52,14 @@ function utf8Len(s, i) {
 /** bstr → PHP dizge literali: düz metin tek tırnakla, kontrol/ikili bayt içeren çift tırnak + kaçış ile */
 export function phpString(s) {
   let plain = true;
+  // gerçek çok satırlı metin (3+ satır sonu) tek tırnakta okunur kalır; "satır\n" gibi kısa metin "\n" kaçışıyla yazılır
+  const multiline = (s.match(/\n/g) ?? []).length >= 3;
   for (let i = 0; i < s.length; i++) {
     const c = s.charCodeAt(i);
     if (printable(c)) continue;
     const n = c >= 0x80 ? utf8Len(s, i) : 0;
     if (n) { i += n - 1; continue; }
-    if (c === 0x0a && s.length > 1) continue; // çok satırlı metin tek tırnakta okunur kalır
+    if (c === 0x0a && multiline) continue;
     plain = false;
     break;
   }

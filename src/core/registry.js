@@ -11,5 +11,7 @@ import * as tags from '../passes/tags.js';
 import * as gotoFlow from '../passes/goto.js';
 import * as strings from '../passes/strings.js';
 import * as rename from '../passes/rename.js';
+import * as tables from '../passes/tables.js';
+import * as callees from '../passes/callees.js';
 
-export const PASSES = [layers, guards, gotoFlow, fold, strings, propagate, dead, integrity, inline, unused, rename, tags];
+export const PASSES = [layers, guards, gotoFlow, fold, strings, propagate, tables, callees, dead, integrity, inline, unused, rename, tags];

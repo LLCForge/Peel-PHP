@@ -36,6 +36,13 @@ function __peel_obs($id, $v) {
   return $v;
 }
 
+// değer gözlemi: dizgeler base64 ile ("s..."), diğerleri tür adıyla ("t...")
+function __peel_val($id, $v) {
+  if (!isset($GLOBALS['__peel']['obs'][$id])) $GLOBALS['__peel']['obs'][$id] = array();
+  if (count($GLOBALS['__peel']['obs'][$id]) < 20) $GLOBALS['__peel']['obs'][$id][] = is_string($v) ? 's' . base64_encode($v) : 't' . gettype($v);
+  return $v;
+}
+
 function __peel_log($kind, $args) {
   $n = count($GLOBALS['__peel']['fx']);
   if ($n >= 2000) return;

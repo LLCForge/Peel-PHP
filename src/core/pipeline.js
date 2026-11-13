@@ -81,7 +81,7 @@ export async function deobfuscate(input, { sandbox = null, only = null, onLog = 
     log,
     bump: (k, n = 1) => { if (n) stats[k] = (stats[k] ?? 0) + n; },
     trace: async (c) => decodeTrace((await runCode(c)).trace),
-    evaluate: (exprs) => sandbox.evaluate({ exprs, version }),
+    evaluate: (exprs, defs = '') => sandbox.evaluate({ exprs, defs, version }),
   };
 
   const passes = PASSES.filter((p) => (!only || only.includes(p.id)) && (!p.needsSandbox || sandbox));
