@@ -247,5 +247,14 @@ substr($t, 0, 7)('peel');
 if (isset(@P['f'])) { @P['f']('x'); }
 `;
 
+// güvenlik: koşulsuz çalışan ama kodu dış girdiden gelen eval sandbox'ta boş çalışır; "boş katman" diye silinmemeli
+fx['webshell-direct'] = `<?php
+// KEEP: @E('' . @P['c']);
+// KEEP: @E(base64_decode(@P['z'] ?? ''));
+@E('' . @P['c']);
+@E(base64_decode(@P['z'] ?? ''));
+echo 'page';
+`;
+
 for (const [name, src] of Object.entries(fx)) writeFileSync(new URL(`${name}.php.x`, dir), encodeFixture(Buffer.from(open(src), 'latin1')));
 console.log(`${Object.keys(fx).length} fixture yazıldı`);
