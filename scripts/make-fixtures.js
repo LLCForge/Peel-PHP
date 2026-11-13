@@ -128,5 +128,133 @@ $a = array('x', 'y');
 echo $a{1};
 `;
 
+// ham çıktı denetimi (yorumlar dahil): yönerge metni base64'tür, yoksa yönergenin kendisi aranan metni içerirdi
+const raw64 = (s) => Buffer.from(s).toString('base64');
+
+// YAK Pro tarzı goto karmaşası: karıştırılmış etiket zinciri, while'a dönen döngü, return'lü dallar, switch içinden atlama
+fx['goto-flow'] = `<?php
+// EXPECT: while ($i < 3) {
+// EXPECT: if ($x > 5) { return 'big'; } return 'small';
+// EXPECT: break;
+// GONE: goto
+goto a1;
+b2: echo "loop $i\\n"; goto c3;
+a1: $i = 0; goto d4;
+f6: switch ($i) { case 3: echo "three\\n"; goto g7; default: echo "other\\n"; } g7: echo f(3), f(9), "\\n"; goto h8;
+d4: if (!($i < 3)) { goto f6; } goto b2;
+c3: $i++; goto d4;
+h8:
+function f($x) { goto L1; L2: return 'small'; L1: if ($x > 5) { goto L3; } goto L2; L3: return 'big'; }
+`;
+
+// değişken içeren dizgede ve sınıf sabitinde kaçışlar (fold'un dokunmadığı yerler), chr() zinciri
+fx['strings-encapsed'] = `<?php
+// EXPECT: const A = 'AB';
+// EXPECT: "even {$i}\\n"
+// EXPECT: echo 'Hi';
+class K { const A = "\\x41\\102"; }
+$i = 2;
+echo "\\x65\\166\\x65\\156 {$i}\\xa", K::A, "\\n";
+echo chr(72) . chr(105);
+`;
+
+// okunmaz adlar: O0O0, lIlI1, _____, _0x..; kullanıma göre adlar
+fx['rename'] = `<?php
+// EXPECT: function fn1($arg1)
+// EXPECT: foreach ($list as $key => $item)
+// EXPECT: echo $key . fn1($item)
+// GONE: O0O0
+// GONE: lIlI
+// GONE: _0x
+// KEEP: $count
+$O0O0O0 = array('a', 'b');
+$count = count($O0O0O0);
+function lIlI1lI($_0x1f2a) { return strtoupper($_0x1f2a) . '!'; }
+foreach ($O0O0O0 as $_____ => $IlIlIl1) { echo $_____ . lIlI1lI($IlIlIl1) . "\\n"; }
+echo $count, "\\n";
+`;
+
+// ad/dizge tabloları: $GLOBALS dizisi, global ile okunan $_123, FOPO tarzı karakter tablosu, \${"\\x47LOBALS"}
+fx['tables'] = `<?php
+// EXPECT: printf('%s-%s', 'a', 'b');
+// EXPECT: print_r([1]);
+// EXPECT: printf('%d', 7);
+// EXPECT: echo 'peel';
+// GONE: $GLOBALS
+// GONE: $_123
+$GLOBALS['t'] = array('str' . 'rev', 'printf');
+$_123 = array('x' => 'print_r', 5 => 'count');
+$O00O = 'abcdefghijklmnopqrstuvwxyz_';
+function g() { global $_123; $_123['x']([1]); }
+$GLOBALS['t'][1]('%s-%s', 'a', 'b');
+g();
+$f = $O00O[15] . $O00O[17] . $O00O[8] . $O00O[13] . $O00O[19] . $O00O[5];
+$f('%d', 7);
+echo \${"\\x47LOBALS"}['t'][0]('leep');
+`;
+
+// preg_replace /e: literal desen (statik) ve döngüde kurulan desen (PHP 5.2 sandbox'ında yakalanır)
+fx['preg-e'] = `<?php
+// EXPECT: echo 'pe-e';
+// EXPECT: echo 'dyn';
+// GONE: preg_replace
+// GONE: base64_decode
+preg_replace('/.*/e', '@E(base64_decode("${b64("echo 'pe-e';")}"))', '');
+$p = '';
+foreach (array('/', '.*', '/', 'e') as $c) $p .= $c;
+preg_replace($p, '@E(base64_decode("${b64("echo 'dyn';")}"))', '');
+`;
+
+// encoder banner'ı ve iç yorumlar gider; kullanıcı yorumu kalır
+fx['banner'] = `<?php
+/*   __________________________________________________
+    |  Obfuscated by YAK Pro - Php Obfuscator  3.0.2   |
+    |__________________________________________________|
+*/
+// GONE-RAW64: ${raw64('YAK Pro')}
+// GONE-RAW64: ${raw64('848c')}
+// GONE-RAW64: ${raw64('/* Y */')}
+// KEEP-RAW64: ${raw64('user note')}
+// EXPECT: echo f('ok');
+// user note: this comment stays
+function f(/*848c*/ $y) { return $y; }
+echo f('ok');
+/* Y */
+`;
+
+// geçici dosyaya yazıp include eden yükleyici (yapo / ob.php tarzı)
+fx['include-tmp'] = `<?php
+// EXPECT: echo 'from-tmp';
+// GONE: tmpfile
+// GONE: fwrite
+$t = tmpfile();
+fwrite($t, base64_decode('${b64("<?php echo 'from-tmp';")}'));
+$m = stream_get_meta_data($t);
+include($m['uri']);
+fclose($t);
+`;
+
+// hesaplanan çağrı adı (XOR ile çözülen tablo); dış girdiyle yapılan çağrıya dokunulmaz
+const xk = 'k3y';
+const xt = [...'print_rXXX'].map((c, i) => `\\x${(c.charCodeAt(0) ^ xk.charCodeAt(i % 3)).toString(16).padStart(2, '0')}`).join('');
+fx['callees'] = `<?php
+// EXPECT: print_r('peel');
+// KEEP: @P['f']('x')
+$k = '${xk}';
+$t = "${xt}";
+for ($i = 0; $i < strlen($t); $i++) { $t[$i] = chr(ord($t[$i]) ^ ord($k[$i % 3])); }
+substr($t, 0, 7)('peel');
+if (isset(@P['f'])) { @P['f']('x'); }
+`;
+
+// güvenlik: koşulsuz çalışan ama kodu dış girdiden gelen eval sandbox'ta boş çalışır; "boş katman" diye silinmemeli
+fx['webshell-direct'] = `<?php
+// KEEP: @E('' . @P['c']);
+// KEEP: @E(base64_decode(@P['z'] ?? ''));
+@E('' . @P['c']);
+@E(base64_decode(@P['z'] ?? ''));
+echo 'page';
+`;
+
 for (const [name, src] of Object.entries(fx)) writeFileSync(new URL(`${name}.php.x`, dir), encodeFixture(Buffer.from(open(src), 'latin1')));
 console.log(`${Object.keys(fx).length} fixture yazıldı`);

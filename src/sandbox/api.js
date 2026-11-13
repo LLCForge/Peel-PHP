@@ -18,10 +18,10 @@ export function sandboxApi(send) {
       // kod bstr'dir: PHP'ye baytlar olduğu gibi gider
       return send({ type: 'run', code: typeof code === 'string' ? toBytes(code) : code, version, deadlineMs: timeoutMs });
     },
-    async evaluate({ exprs, version = '8.3', timeoutMs = RUN_TIMEOUT_MS }) {
+    async evaluate({ exprs, version = '8.3', defs = '', timeoutMs = RUN_TIMEOUT_MS }) {
       if (!exprs.length) return [];
       await load(version);
-      const r = await send({ type: 'evaluate', exprs, version, deadlineMs: timeoutMs });
+      const r = await send({ type: 'evaluate', exprs, defs, version, deadlineMs: timeoutMs });
       return r.ok ? r.results : null;
     },
   };

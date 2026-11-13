@@ -10,6 +10,8 @@ import { toText } from './bstr.js';
 const MAX_ROUNDS = 16;
 const FATAL = new Set([1, 4, 16, 64]); // E_ERROR, E_PARSE, E_CORE_ERROR, E_COMPILE_ERROR
 
+const LEGACY = /\/e modifier is no longer supported|Unknown modifier 'e'/;
+
 const fatalOf = (trace) => (trace?.errors ?? []).filter((e) => FATAL.has(e.type));
 
 /** Kod hangi PHP sürümünde çalışıyor? Önce 8.3; sözdizimi/fatal hatada eski sürümler. */
@@ -19,12 +21,14 @@ async function pickVersion(sandbox, code, log) {
     const r = await sandbox.run({ code, version });
     const trace = decodeTrace(r.trace);
     const fatal = r.ok ? fatalOf(trace).length : 99;
-    const score = fatal * 1000 - (trace?.evals.length ?? 0);
+    // eski PHP'ye özgü özellik uyarısı (preg_replace /e): kod yeni sürümde sessizce hiçbir şey yapmıyor olabilir
+    const legacy = (trace?.errors ?? []).some((e) => LEGACY.test(e.message)) ? 1 : 0;
+    const score = fatal * 1000 + legacy * 500 - (trace?.evals.length ?? 0);
     if (!best || score < best.score) best = { version, score, run: r, trace };
-    if (r.ok && fatal === 0) break;
+    if (r.ok && fatal === 0 && !legacy) break;
     // zaman aşımı sürüme bağlı değildir (sonsuz döngü, ağır hesap): diğer sürümler denenmez
     if (r.timedOut) { log(`PHP ${version}: zaman aşımı, diğer sürümler denenmedi`, 'warn'); break; }
-    log(`PHP ${version}: ${r.ok ? `${fatal} fatal hata (${fatalOf(trace)[0]?.message ?? ''})` : r.error}`, 'info');
+    log(`PHP ${version}: ${r.ok ? (fatal ? `${fatal} fatal hata (${fatalOf(trace)[0]?.message ?? ''})` : 'eski sürüm özelliği (preg_replace /e)') : r.error}`, 'info');
   }
   return best;
 }
@@ -84,7 +88,7 @@ export async function deobfuscate(input, { sandbox = null, only = null, onLog = 
     bump: (k, n = 1) => { if (n) stats[k] = (stats[k] ?? 0) + n; },
     // kod hiç çalıştırılamadıysa (zaman aşımı, sandbox hatası) çalışma anı pass'leri yeniden denemez
     trace: async (c) => (baseline ? decodeTrace((await runCode(c)).trace) : null),
-    evaluate: (exprs) => sandbox.evaluate({ exprs, version }),
+    evaluate: (exprs, defs = '') => sandbox.evaluate({ exprs, defs, version }),
   };
 
   const passes = PASSES.filter((p) => (!only || only.includes(p.id)) && (!p.needsSandbox || sandbox));

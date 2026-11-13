@@ -71,11 +71,12 @@ export function createEngine(createPhp) {
   }
 
   /** Saf ifadeleri toplu değerlendirir: her ifadenin sonucu serialize edilmiş olarak döner (hata: null) */
-  async function evaluate({ exprs, version = '8.3' }) {
+  async function evaluate({ exprs, version = '8.3', defs = '' }) {
     const php = await instance(version);
     // ifadeler bstr'dir: dosya bayt olarak yazılır; uyarılar (ör. bozuk base64) sonucu bozmasın diye susturulur
     const body = exprs.map((e, i) => `try { $__r[${i}] = array(true, serialize(@(${e}))); } catch (Throwable $__e) { $__r[${i}] = array(false, $__e->getMessage()); }`).join('\n');
-    php.writeFile('/peel/eval.php', toBytes(`<?php\nmt_srand(1);\n$__r = array();\n${body}\necho json_encode(array_map(function ($x) { return array($x[0], base64_encode($x[1])); }, $__r));`));
+    // defs: ifadelerin çağırdığı saf kullanıcı fonksiyonlarının tanımları
+    php.writeFile('/peel/eval.php', toBytes(`<?php\nmt_srand(1);\n${defs}\n$__r = array();\n${body}\necho json_encode(array_map(function ($x) { return array($x[0], base64_encode($x[1])); }, $__r));`));
     let res;
     try {
       res = await php.run({ scriptPath: '/peel/eval.php' });

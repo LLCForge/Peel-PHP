@@ -23,8 +23,48 @@ const STATEMENTS = new Set(['program', 'expressionstatement', 'echo', 'return', 
   'enum', 'try', 'catch', 'throw', 'inline', 'halt', 'declare', 'namespace', 'usegroup', 'constantstatement',
   'propertystatement', 'classconstant', 'method', 'label', 'goto', 'traituse', 'noop']);
 
+const WS = (c) => c === ' ' || c === '\t' || c === '\n' || c === '\r';
+
 function trimExpressions(ast, code) {
   walk(ast, (n) => {
+    // "(eval(...));" — php-parser deyimi açılan parantezden sonra başlatır, ifadenin sonuna kapanışı katar:
+    // deyim parantezleri kapsasın, ifade kapsamasın (deyimden önce "(" ancak bu deyime ait olabilir)
+    if (n.kind === 'expressionstatement' && n.loc && n.expression?.loc) {
+      let s = n.loc.start.offset;
+      let k = 0;
+      for (let i = s - 1; i >= 0; i--) {
+        if (WS(code[i])) continue;
+        if (code[i] !== '(') break;
+        k++;
+        s = i;
+      }
+      if (k) {
+        n.loc = { ...n.loc, start: { ...n.loc.start, offset: s } }; // konum nesneleri ifadeyle paylaşılıyor olabilir
+        let e = n.expression.loc.end.offset;
+        for (let j = 0; j < k; j++) {
+          while (e > 0 && (WS(code[e - 1]) || code[e - 1] === ';')) e--;
+          if (code[e - 1] === ')') e--;
+        }
+        while (e > 0 && WS(code[e - 1])) e--;
+        n.expression.loc = { ...n.expression.loc, end: { ...n.expression.loc.end, offset: e } };
+      }
+    }
+    // 'a' . ('b'): php-parser son işleneni parantezli ifadelerin bitişini kapanış parantezinden önce bırakır
+    const lastOp = n.kind === 'bin' ? n.right : n.kind === 'retif' ? n.falseExpr : n.kind === 'unary' ? n.what : n.kind === 'cast' ? n.expr : null;
+    if (lastOp?.parenthesizedExpression && lastOp.loc && n.loc) {
+      const prevEnd = n.kind === 'bin' ? n.left?.loc?.end.offset : n.kind === 'retif' ? (n.trueExpr ?? n.test)?.loc?.end.offset : n.loc.start.offset;
+      if (prevEnd !== undefined) {
+        const between = code.slice(prevEnd, lastOp.loc.start.offset);
+        const k = (between.match(/\(/g) ?? []).length - (between.match(/\)/g) ?? []).length;
+        let e = lastOp.loc.end.offset;
+        for (let j = 0; j < k; j++) {
+          while (WS(code[e])) e++;
+          if (code[e] !== ')') break;
+          e++;
+        }
+        if (e > n.loc.end.offset) n.loc = { ...n.loc, end: { ...n.loc.end, offset: e } };
+      }
+    }
     if (STATEMENTS.has(n.kind) || !n.loc) return true;
     let e = n.loc.end.offset;
     const s = n.loc.start.offset;

@@ -1,0 +1,314 @@
+{
+  "alom-default--mini": {
+    "tool": "Alom",
+    "job": "alom-default",
+    "source": "mini",
+    "phpVersion": "7.4",
+    "bytes": 32932,
+    "driver": "include '/tool/alomencoder.obfs.php';\nfile_put_contents('/work/out.php', AlomEncoder::obfuscator('/work/in.php', array()));\n"
+  },
+  "alom-depth2--textutil": {
+    "tool": "Alom",
+    "job": "alom-depth2",
+    "source": "textutil",
+    "phpVersion": "7.4",
+    "bytes": 47421,
+    "driver": "include '/tool/alomencoder.obfs.php';\nfile_put_contents('/work/out.php', AlomEncoder::obfuscator('/work/in.php', array('rounds' => array('main' => array('depth' => 2)), 'license' => array('title' => 'bench', 'author' => 'peel'))));\n"
+  },
+  "alom-raw--mini": {
+    "tool": "Alom",
+    "job": "alom-raw",
+    "source": "mini",
+    "phpVersion": "7.4",
+    "bytes": 32932,
+    "driver": "include '/tool/alomencoder.obfs.php';\nfile_put_contents('/work/out.php', AlomEncoder::obfuscator('/work/in.php', array('style' => array('separated_loader' => false, 'raw' => true))));\n"
+  },
+  "globus-default--inventory": {
+    "tool": "GLOBUS-studio/PhpObfuscator",
+    "job": "globus-default",
+    "source": "inventory",
+    "phpVersion": "8.3",
+    "bytes": 2970,
+    "driver": "spl_autoload_register(function ($c) { $pre = 'GLOBUSstudio\\\\PhpObfuscator\\\\'; if (strncmp($c, $pre, strlen($pre))) return; $p = '/tool/src/' . str_replace('\\\\', '/', substr($c, strlen($pre))) . '.php'; if (is_file($p)) require $p; });\n$o = new GLOBUSstudio\\PhpObfuscator\\Obfuscator(new GLOBUSstudio\\PhpObfuscator\\Options(seed: 42));\nfile_put_contents('/work/out.php', $o->obfuscate(file_get_contents('/work/in.php')));\n"
+  },
+  "globus-default--textutil": {
+    "tool": "GLOBUS-studio/PhpObfuscator",
+    "job": "globus-default",
+    "source": "textutil",
+    "phpVersion": "8.3",
+    "bytes": 3370,
+    "driver": "spl_autoload_register(function ($c) { $pre = 'GLOBUSstudio\\\\PhpObfuscator\\\\'; if (strncmp($c, $pre, strlen($pre))) return; $p = '/tool/src/' . str_replace('\\\\', '/', substr($c, strlen($pre))) . '.php'; if (is_file($p)) require $p; });\n$o = new GLOBUSstudio\\PhpObfuscator\\Obfuscator(new GLOBUSstudio\\PhpObfuscator\\Options(seed: 42));\nfile_put_contents('/work/out.php', $o->obfuscate(file_get_contents('/work/in.php')));\n"
+  },
+  "globus-names--inventory": {
+    "tool": "GLOBUS-studio/PhpObfuscator",
+    "job": "globus-names",
+    "source": "inventory",
+    "phpVersion": "8.3",
+    "bytes": 1951,
+    "driver": "spl_autoload_register(function ($c) { $pre = 'GLOBUSstudio\\\\PhpObfuscator\\\\'; if (strncmp($c, $pre, strlen($pre))) return; $p = '/tool/src/' . str_replace('\\\\', '/', substr($c, strlen($pre))) . '.php'; if (is_file($p)) require $p; });\n$o = new GLOBUSstudio\\PhpObfuscator\\Obfuscator(new GLOBUSstudio\\PhpObfuscator\\Options(seed: 9, wrapWithEval: false, encodeStrings: false));\nfile_put_contents('/work/out.php', $o->obfuscate(file_get_contents('/work/in.php')));\n"
+  },
+  "globus-noeval--mini": {
+    "tool": "GLOBUS-studio/PhpObfuscator",
+    "job": "globus-noeval",
+    "source": "mini",
+    "phpVersion": "8.3",
+    "bytes": 599,
+    "driver": "spl_autoload_register(function ($c) { $pre = 'GLOBUSstudio\\\\PhpObfuscator\\\\'; if (strncmp($c, $pre, strlen($pre))) return; $p = '/tool/src/' . str_replace('\\\\', '/', substr($c, strlen($pre))) . '.php'; if (is_file($p)) require $p; });\n$o = new GLOBUSstudio\\PhpObfuscator\\Obfuscator(new GLOBUSstudio\\PhpObfuscator\\Options(seed: 7, wrapWithEval: false));\nfile_put_contents('/work/out.php', $o->obfuscate(file_get_contents('/work/in.php')));\n"
+  },
+  "globus-noeval--textutil": {
+    "tool": "GLOBUS-studio/PhpObfuscator",
+    "job": "globus-noeval",
+    "source": "textutil",
+    "phpVersion": "8.3",
+    "bytes": 2552,
+    "driver": "spl_autoload_register(function ($c) { $pre = 'GLOBUSstudio\\\\PhpObfuscator\\\\'; if (strncmp($c, $pre, strlen($pre))) return; $p = '/tool/src/' . str_replace('\\\\', '/', substr($c, strlen($pre))) . '.php'; if (is_file($p)) require $p; });\n$o = new GLOBUSstudio\\PhpObfuscator\\Obfuscator(new GLOBUSstudio\\PhpObfuscator\\Options(seed: 7, wrapWithEval: false));\nfile_put_contents('/work/out.php', $o->obfuscate(file_get_contents('/work/in.php')));\n"
+  },
+  "krypt0nn-all--mini": {
+    "tool": "krypt0nn/php-obfuscator",
+    "job": "krypt0nn-all",
+    "source": "mini",
+    "phpVersion": "8.3",
+    "bytes": 1281,
+    "driver": "chdir('/tool');\nrequire 'obfuscator.php';\n$code = file_get_contents('/work/in.php');\n$out = Obfuscator\\Obfuscator::process($code, array('pipeline' => array(new Obfuscator\\Modules\\WhitespaceStrip, new Obfuscator\\Modules\\StringEncoder, new Obfuscator\\Modules\\IntegerEncoder, new Obfuscator\\Modules\\SilentCalls)));\nfile_put_contents('/work/out.php', $out);\n"
+  },
+  "krypt0nn-strings--mini": {
+    "tool": "krypt0nn/php-obfuscator",
+    "job": "krypt0nn-strings",
+    "source": "mini",
+    "phpVersion": "8.3",
+    "bytes": 588,
+    "driver": "chdir('/tool');\nrequire 'obfuscator.php';\n$code = file_get_contents('/work/in.php');\n$out = Obfuscator\\Obfuscator::process($code, array('pipeline' => array(new Obfuscator\\Modules\\WhitespaceStrip, new Obfuscator\\Modules\\StringEncoder)));\nfile_put_contents('/work/out.php', $out);\n"
+  },
+  "krypt0nn-strings--textutil": {
+    "tool": "krypt0nn/php-obfuscator",
+    "job": "krypt0nn-strings",
+    "source": "textutil",
+    "phpVersion": "8.3",
+    "bytes": 2441,
+    "driver": "chdir('/tool');\nrequire 'obfuscator.php';\n$code = file_get_contents('/work/in.php');\n$out = Obfuscator\\Obfuscator::process($code, array('pipeline' => array(new Obfuscator\\Modules\\WhitespaceStrip, new Obfuscator\\Modules\\StringEncoder)));\nfile_put_contents('/work/out.php', $out);\n"
+  },
+  "lwertugrul--inventory": {
+    "tool": "lwertugrul/Php-obfuscator",
+    "job": "lwertugrul",
+    "source": "inventory",
+    "phpVersion": "8.3",
+    "bytes": 1425,
+    "driver": "$src = file_get_contents('/tool/obfuscator.php');\n$src = str_replace('PD9waHAKZWNobyAiSEVMTE8gV09STEQiOwo/Pg==', base64_encode(file_get_contents('/work/in.php')), $src);\nfile_put_contents('/work/t.php', $src);\nob_start();\ninclude '/work/t.php';\nfile_put_contents('/work/out.php', ltrim(ob_get_clean()));\n"
+  },
+  "lwertugrul--mini": {
+    "tool": "lwertugrul/Php-obfuscator",
+    "job": "lwertugrul",
+    "source": "mini",
+    "phpVersion": "8.3",
+    "bytes": 577,
+    "driver": "$src = file_get_contents('/tool/obfuscator.php');\n$src = str_replace('PD9waHAKZWNobyAiSEVMTE8gV09STEQiOwo/Pg==', base64_encode(file_get_contents('/work/in.php')), $src);\nfile_put_contents('/work/t.php', $src);\nob_start();\ninclude '/work/t.php';\nfile_put_contents('/work/out.php', ltrim(ob_get_clean()));\n"
+  },
+  "naneau-all--inventory": {
+    "tool": "naneau/php-obfuscator",
+    "job": "naneau-all",
+    "source": "inventory",
+    "phpVersion": "7.4",
+    "bytes": 2238,
+    "driver": "require '/tool/PHP-Parser/lib/bootstrap.php';\nspl_autoload_register(function ($c) { $p = '/tool/src/' . str_replace('\\\\', '/', $c) . '.php'; if (is_file($p)) require $p; });\n$s = new Naneau\\Obfuscator\\StringScrambler('peel-bench');\n$t = new PhpParser\\NodeTraverser();\n$t->addVisitor(new Naneau\\Obfuscator\\Node\\Visitor\\ScrambleVariable($s));\n$t->addVisitor(new Naneau\\Obfuscator\\Node\\Visitor\\ScramblePrivateMethod($s));\n$t->addVisitor(new Naneau\\Obfuscator\\Node\\Visitor\\ScramblePrivateProperty($s));\n$p = new PhpParser\\Parser(new PhpParser\\Lexer());\n$ast = $t->traverse($p->parse(php_strip_whitespace('/work/in.php')));\n$pp = new PhpParser\\PrettyPrinter\\Standard();\nfile_put_contents('/work/out.php', \"<?php\\n\" . $pp->prettyPrint($ast));\n"
+  },
+  "naneau-all--mini": {
+    "tool": "naneau/php-obfuscator",
+    "job": "naneau-all",
+    "source": "mini",
+    "phpVersion": "7.4",
+    "bytes": 420,
+    "driver": "require '/tool/PHP-Parser/lib/bootstrap.php';\nspl_autoload_register(function ($c) { $p = '/tool/src/' . str_replace('\\\\', '/', $c) . '.php'; if (is_file($p)) require $p; });\n$s = new Naneau\\Obfuscator\\StringScrambler('peel-bench');\n$t = new PhpParser\\NodeTraverser();\n$t->addVisitor(new Naneau\\Obfuscator\\Node\\Visitor\\ScrambleVariable($s));\n$t->addVisitor(new Naneau\\Obfuscator\\Node\\Visitor\\ScramblePrivateMethod($s));\n$t->addVisitor(new Naneau\\Obfuscator\\Node\\Visitor\\ScramblePrivateProperty($s));\n$p = new PhpParser\\Parser(new PhpParser\\Lexer());\n$ast = $t->traverse($p->parse(php_strip_whitespace('/work/in.php')));\n$pp = new PhpParser\\PrettyPrinter\\Standard();\nfile_put_contents('/work/out.php', \"<?php\\n\" . $pp->prettyPrint($ast));\n"
+  },
+  "naneau-all--textutil": {
+    "tool": "naneau/php-obfuscator",
+    "job": "naneau-all",
+    "source": "textutil",
+    "phpVersion": "7.4",
+    "bytes": 2253,
+    "driver": "require '/tool/PHP-Parser/lib/bootstrap.php';\nspl_autoload_register(function ($c) { $p = '/tool/src/' . str_replace('\\\\', '/', $c) . '.php'; if (is_file($p)) require $p; });\n$s = new Naneau\\Obfuscator\\StringScrambler('peel-bench');\n$t = new PhpParser\\NodeTraverser();\n$t->addVisitor(new Naneau\\Obfuscator\\Node\\Visitor\\ScrambleVariable($s));\n$t->addVisitor(new Naneau\\Obfuscator\\Node\\Visitor\\ScramblePrivateMethod($s));\n$t->addVisitor(new Naneau\\Obfuscator\\Node\\Visitor\\ScramblePrivateProperty($s));\n$p = new PhpParser\\Parser(new PhpParser\\Lexer());\n$ast = $t->traverse($p->parse(php_strip_whitespace('/work/in.php')));\n$pp = new PhpParser\\PrettyPrinter\\Standard();\nfile_put_contents('/work/out.php', \"<?php\\n\" . $pp->prettyPrint($ast));\n"
+  },
+  "naneau-vars--inventory": {
+    "tool": "naneau/php-obfuscator",
+    "job": "naneau-vars",
+    "source": "inventory",
+    "phpVersion": "7.4",
+    "bytes": 2179,
+    "driver": "require '/tool/PHP-Parser/lib/bootstrap.php';\nspl_autoload_register(function ($c) { $p = '/tool/src/' . str_replace('\\\\', '/', $c) . '.php'; if (is_file($p)) require $p; });\n$s = new Naneau\\Obfuscator\\StringScrambler('peel-bench');\n$t = new PhpParser\\NodeTraverser();\n$t->addVisitor(new Naneau\\Obfuscator\\Node\\Visitor\\ScrambleVariable($s));\n$p = new PhpParser\\Parser(new PhpParser\\Lexer());\n$ast = $t->traverse($p->parse(php_strip_whitespace('/work/in.php')));\n$pp = new PhpParser\\PrettyPrinter\\Standard();\nfile_put_contents('/work/out.php', \"<?php\\n\" . $pp->prettyPrint($ast));\n"
+  },
+  "naneau-vars--textutil": {
+    "tool": "naneau/php-obfuscator",
+    "job": "naneau-vars",
+    "source": "textutil",
+    "phpVersion": "7.4",
+    "bytes": 2250,
+    "driver": "require '/tool/PHP-Parser/lib/bootstrap.php';\nspl_autoload_register(function ($c) { $p = '/tool/src/' . str_replace('\\\\', '/', $c) . '.php'; if (is_file($p)) require $p; });\n$s = new Naneau\\Obfuscator\\StringScrambler('peel-bench');\n$t = new PhpParser\\NodeTraverser();\n$t->addVisitor(new Naneau\\Obfuscator\\Node\\Visitor\\ScrambleVariable($s));\n$p = new PhpParser\\Parser(new PhpParser\\Lexer());\n$ast = $t->traverse($p->parse(php_strip_whitespace('/work/in.php')));\n$pp = new PhpParser\\PrettyPrinter\\Standard();\nfile_put_contents('/work/out.php', \"<?php\\n\" . $pp->prettyPrint($ast));\n"
+  },
+  "ricardopedias--mini": {
+    "tool": "ricardopedias/php-obfuscator",
+    "job": "ricardopedias",
+    "source": "mini",
+    "phpVersion": "8.3",
+    "bytes": 6936,
+    "driver": "// league/flysystem 1.x yerine yalnızca kullanılan parçalar (Util::pathinfo, Local + Filesystem read/write)\nfile_put_contents('/work/shim.php', '<?php namespace League\\\\Flysystem { class Util { public static function pathinfo($p) { $i = pathinfo($p); $i[\"path\"] = $p; if (!isset($i[\"dirname\"]) || $i[\"dirname\"] === \".\") $i[\"dirname\"] = \"\"; return $i; } }\nclass Filesystem { private $a; public function __construct($a) { $this->a = $a; } public function read($f) { return file_get_contents($this->a->root . \"/\" . $f); } public function write($f, $c) { return file_put_contents($this->a->root . \"/\" . $f, $c) !== false; } } }\nnamespace League\\\\Flysystem\\\\Adapter { class Local { public $root; public function __construct($r) { $this->root = rtrim($r, \"/\"); } } }');\nrequire '/work/shim.php';\nspl_autoload_register(function ($c) { $pre = 'PhpObfuscator\\\\'; if (strncmp($c, $pre, strlen($pre))) return; $p = '/tool/src/' . str_replace('\\\\', '/', substr($c, strlen($pre))) . '.php'; if (is_file($p)) require $p; });\n$o = (new PhpObfuscator\\Obfuscate())->from('/work/in.php');\n$gen = function () { $r = $this->blindMaker()->getRevertFileContents(); return $this->blindMaker()->addPhpWrapper($this->obfuscateUnpackFunctions($r) . $this->getObfuscated()); };\nfile_put_contents('/work/out.php', Closure::bind($gen, $o, get_class($o))());\n"
+  },
+  "ricardopedias--textutil": {
+    "tool": "ricardopedias/php-obfuscator",
+    "job": "ricardopedias",
+    "source": "textutil",
+    "phpVersion": "8.3",
+    "bytes": 8736,
+    "driver": "// league/flysystem 1.x yerine yalnızca kullanılan parçalar (Util::pathinfo, Local + Filesystem read/write)\nfile_put_contents('/work/shim.php', '<?php namespace League\\\\Flysystem { class Util { public static function pathinfo($p) { $i = pathinfo($p); $i[\"path\"] = $p; if (!isset($i[\"dirname\"]) || $i[\"dirname\"] === \".\") $i[\"dirname\"] = \"\"; return $i; } }\nclass Filesystem { private $a; public function __construct($a) { $this->a = $a; } public function read($f) { return file_get_contents($this->a->root . \"/\" . $f); } public function write($f, $c) { return file_put_contents($this->a->root . \"/\" . $f, $c) !== false; } } }\nnamespace League\\\\Flysystem\\\\Adapter { class Local { public $root; public function __construct($r) { $this->root = rtrim($r, \"/\"); } } }');\nrequire '/work/shim.php';\nspl_autoload_register(function ($c) { $pre = 'PhpObfuscator\\\\'; if (strncmp($c, $pre, strlen($pre))) return; $p = '/tool/src/' . str_replace('\\\\', '/', substr($c, strlen($pre))) . '.php'; if (is_file($p)) require $p; });\n$o = (new PhpObfuscator\\Obfuscate())->from('/work/in.php');\n$gen = function () { $r = $this->blindMaker()->getRevertFileContents(); return $this->blindMaker()->addPhpWrapper($this->obfuscateUnpackFunctions($r) . $this->getObfuscated()); };\nfile_put_contents('/work/out.php', Closure::bind($gen, $o, get_class($o))());\n"
+  },
+  "southern-default--mini": {
+    "tool": "Southern/php-obfuscator",
+    "job": "southern-default",
+    "source": "mini",
+    "phpVersion": "7.4",
+    "bytes": 1790,
+    "driver": "include '/tool/obfuscator.php';\n$o = new Obfuscator();\n\n$o->file('/work/in.php');\n$o->pack();\nfile_put_contents('/work/out.php', $o->code());\n"
+  },
+  "southern-nob64--mini": {
+    "tool": "Southern/php-obfuscator",
+    "job": "southern-nob64",
+    "source": "mini",
+    "phpVersion": "7.4",
+    "bytes": 1316,
+    "driver": "include '/tool/obfuscator.php';\n$o = new Obfuscator();\n$o->b64 = false;\n$o->file('/work/in.php');\n$o->pack();\nfile_put_contents('/work/out.php', $o->code());\n"
+  },
+  "weizenspreu--mini": {
+    "tool": "weizenspreu/ob.php",
+    "job": "weizenspreu",
+    "source": "mini",
+    "phpVersion": "8.3",
+    "bytes": 3398,
+    "driver": "$argv = array('ob.php', '/work/in.php'); $argc = 2;\nob_start();\ninclude '/tool/ob.php';\nfile_put_contents('/work/out.php', ob_get_clean());\n"
+  },
+  "weizenspreu--textutil": {
+    "tool": "weizenspreu/ob.php",
+    "job": "weizenspreu",
+    "source": "textutil",
+    "phpVersion": "8.3",
+    "bytes": 15910,
+    "driver": "$argv = array('ob.php', '/work/in.php'); $argc = 2;\nob_start();\ninclude '/tool/ob.php';\nfile_put_contents('/work/out.php', ob_get_clean());\n"
+  },
+  "yakpro-default--inventory": {
+    "tool": "yakpro-po",
+    "job": "yakpro-default",
+    "source": "inventory",
+    "phpVersion": "8.3",
+    "bytes": 3548,
+    "driver": "$argv = array('/tool/yakpro-po.php', '--silent', '/work/in.php', '-o', '/work/out.php');\n$argc = count($argv); $_SERVER['argv'] = $argv;\nchdir('/work');\ninclude '/tool/yakpro-po.php';\n"
+  },
+  "yakpro-default--mini": {
+    "tool": "yakpro-po",
+    "job": "yakpro-default",
+    "source": "mini",
+    "phpVersion": "8.3",
+    "bytes": 1122,
+    "driver": "$argv = array('/tool/yakpro-po.php', '--silent', '/work/in.php', '-o', '/work/out.php');\n$argc = count($argv); $_SERVER['argv'] = $argv;\nchdir('/work');\ninclude '/tool/yakpro-po.php';\n"
+  },
+  "yakpro-default--textutil": {
+    "tool": "yakpro-po",
+    "job": "yakpro-default",
+    "source": "textutil",
+    "phpVersion": "8.3",
+    "bytes": 4035,
+    "driver": "$argv = array('/tool/yakpro-po.php', '--silent', '/work/in.php', '-o', '/work/out.php');\n$argc = count($argv); $_SERVER['argv'] = $argv;\nchdir('/work');\ninclude '/tool/yakpro-po.php';\n"
+  },
+  "yakpro-flow--inventory": {
+    "tool": "yakpro-po",
+    "job": "yakpro-flow",
+    "source": "inventory",
+    "phpVersion": "8.3",
+    "bytes": 3100,
+    "driver": "$argv = array('/tool/yakpro-po.php', '--silent', '--no-obfuscate-string-literal', '--no-obfuscate-variable-name', '--no-obfuscate-function-name', '--no-obfuscate-class-name', '--no-obfuscate-method-name', '--no-obfuscate-property-name', '--no-obfuscate-constant-name', '--no-obfuscate-class_constant-name', '--no-obfuscate-interface-name', '/work/in.php', '-o', '/work/out.php');\n$argc = count($argv); $_SERVER['argv'] = $argv;\nchdir('/work');\ninclude '/tool/yakpro-po.php';\n"
+  },
+  "yakpro-flow--textutil": {
+    "tool": "yakpro-po",
+    "job": "yakpro-flow",
+    "source": "textutil",
+    "phpVersion": "8.3",
+    "bytes": 3205,
+    "driver": "$argv = array('/tool/yakpro-po.php', '--silent', '--no-obfuscate-string-literal', '--no-obfuscate-variable-name', '--no-obfuscate-function-name', '--no-obfuscate-class-name', '--no-obfuscate-method-name', '--no-obfuscate-property-name', '--no-obfuscate-constant-name', '--no-obfuscate-class_constant-name', '--no-obfuscate-interface-name', '/work/in.php', '-o', '/work/out.php');\n$argc = count($argv); $_SERVER['argv'] = $argv;\nchdir('/work');\ninclude '/tool/yakpro-po.php';\n"
+  },
+  "yakpro-hexa--mini": {
+    "tool": "yakpro-po",
+    "job": "yakpro-hexa",
+    "source": "mini",
+    "phpVersion": "8.3",
+    "bytes": 1531,
+    "driver": "$argv = array('/tool/yakpro-po.php', '--silent', '--scramble-mode', 'hexa', '--scramble-length', '12', '/work/in.php', '-o', '/work/out.php');\n$argc = count($argv); $_SERVER['argv'] = $argv;\nchdir('/work');\ninclude '/tool/yakpro-po.php';\n"
+  },
+  "yakpro-hexa--textutil": {
+    "tool": "yakpro-po",
+    "job": "yakpro-hexa",
+    "source": "textutil",
+    "phpVersion": "8.3",
+    "bytes": 5545,
+    "driver": "$argv = array('/tool/yakpro-po.php', '--silent', '--scramble-mode', 'hexa', '--scramble-length', '12', '/work/in.php', '-o', '/work/out.php');\n$argc = count($argv); $_SERVER['argv'] = $argv;\nchdir('/work');\ninclude '/tool/yakpro-po.php';\n"
+  },
+  "yakpro-names--inventory": {
+    "tool": "yakpro-po",
+    "job": "yakpro-names",
+    "source": "inventory",
+    "phpVersion": "8.3",
+    "bytes": 2018,
+    "driver": "$argv = array('/tool/yakpro-po.php', '--silent', '--no-obfuscate-string-literal', '--no-obfuscate-if-statement', '--no-obfuscate-loop-statement', '--no-shuffle-statements', '/work/in.php', '-o', '/work/out.php');\n$argc = count($argv); $_SERVER['argv'] = $argv;\nchdir('/work');\ninclude '/tool/yakpro-po.php';\n"
+  },
+  "yakpro-names--textutil": {
+    "tool": "yakpro-po",
+    "job": "yakpro-names",
+    "source": "textutil",
+    "phpVersion": "8.3",
+    "bytes": 2110,
+    "driver": "$argv = array('/tool/yakpro-po.php', '--silent', '--no-obfuscate-string-literal', '--no-obfuscate-if-statement', '--no-obfuscate-loop-statement', '--no-shuffle-statements', '/work/in.php', '-o', '/work/out.php');\n$argc = count($argv); $_SERVER['argv'] = $argv;\nchdir('/work');\ninclude '/tool/yakpro-po.php';\n"
+  },
+  "yakpro-numeric--inventory": {
+    "tool": "yakpro-po",
+    "job": "yakpro-numeric",
+    "source": "inventory",
+    "phpVersion": "8.3",
+    "bytes": 3880,
+    "driver": "$argv = array('/tool/yakpro-po.php', '--silent', '--scramble-mode', 'numeric', '--no-strip-indentation', '/work/in.php', '-o', '/work/out.php');\n$argc = count($argv); $_SERVER['argv'] = $argv;\nchdir('/work');\ninclude '/tool/yakpro-po.php';\n"
+  },
+  "yakpro-numeric--mini": {
+    "tool": "yakpro-po",
+    "job": "yakpro-numeric",
+    "source": "mini",
+    "phpVersion": "8.3",
+    "bytes": 1138,
+    "driver": "$argv = array('/tool/yakpro-po.php', '--silent', '--scramble-mode', 'numeric', '--no-strip-indentation', '/work/in.php', '-o', '/work/out.php');\n$argc = count($argv); $_SERVER['argv'] = $argv;\nchdir('/work');\ninclude '/tool/yakpro-po.php';\n"
+  },
+  "yakpro-shuffle--textutil": {
+    "tool": "yakpro-po",
+    "job": "yakpro-shuffle",
+    "source": "textutil",
+    "phpVersion": "8.3",
+    "bytes": 2635,
+    "driver": "$argv = array('/tool/yakpro-po.php', '--silent', '--no-obfuscate-string-literal', '--no-obfuscate-if-statement', '--no-obfuscate-loop-statement', '--no-obfuscate-variable-name', '--no-obfuscate-function-name', '/work/in.php', '-o', '/work/out.php');\n$argc = count($argv); $_SERVER['argv'] = $argv;\nchdir('/work');\ninclude '/tool/yakpro-po.php';\n"
+  },
+  "yakpro-strings--inventory": {
+    "tool": "yakpro-po",
+    "job": "yakpro-strings",
+    "source": "inventory",
+    "phpVersion": "8.3",
+    "bytes": 2478,
+    "driver": "$argv = array('/tool/yakpro-po.php', '--silent', '--no-obfuscate-if-statement', '--no-obfuscate-loop-statement', '--no-shuffle-statements', '--no-obfuscate-variable-name', '--no-obfuscate-function-name', '--no-obfuscate-class-name', '--no-obfuscate-method-name', '--no-obfuscate-property-name', '--no-obfuscate-constant-name', '--no-obfuscate-class_constant-name', '--no-obfuscate-interface-name', '/work/in.php', '-o', '/work/out.php');\n$argc = count($argv); $_SERVER['argv'] = $argv;\nchdir('/work');\ninclude '/tool/yakpro-po.php';\n"
+  },
+  "yapo--inventory": {
+    "tool": "Cvar1984/yapo",
+    "job": "yapo",
+    "source": "inventory",
+    "phpVersion": "8.3",
+    "bytes": 1641,
+    "driver": "require '/tool/src/Yapo/Exceptions/NotFoundException.php';\nrequire '/tool/src/Yapo/Exceptions/BadPermissionException.php';\nrequire '/tool/src/Yapo/Yapo.php';\ncopy('/work/in.php', '/work/out.php');\nCvar1984\\Yapo\\Yapo::make('/work/out.php');\n"
+  },
+  "yapo--mini": {
+    "tool": "Cvar1984/yapo",
+    "job": "yapo",
+    "source": "mini",
+    "phpVersion": "8.3",
+    "bytes": 1005,
+    "driver": "require '/tool/src/Yapo/Exceptions/NotFoundException.php';\nrequire '/tool/src/Yapo/Exceptions/BadPermissionException.php';\nrequire '/tool/src/Yapo/Yapo.php';\ncopy('/work/in.php', '/work/out.php');\nCvar1984\\Yapo\\Yapo::make('/work/out.php');\n"
+  }
+}
