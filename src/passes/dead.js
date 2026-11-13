@@ -27,6 +27,17 @@ function truth(n) {
 }
 
 
+// !function_exists('f'), function_exists('f') == false (=== false, false == ...) → çağrı düğümü
+function notExists(test) {
+  const isFe = (c) => c?.kind === 'call' && String(c.what?.name).replace(/^\\/, '').toLowerCase() === 'function_exists' && c.arguments.length === 1 && c.arguments[0]?.kind === 'string';
+  if (test?.kind === 'unary' && test.type === '!' && isFe(test.what)) return test.what;
+  if (test?.kind === 'bin' && (test.type === '==' || test.type === '===')) {
+    if (isFe(test.left) && test.right?.kind === 'boolean' && !test.right.value) return test.left;
+    if (isFe(test.right) && test.left?.kind === 'boolean' && !test.left.value) return test.right;
+  }
+  return null;
+}
+
 export async function run(code, ctx) {
   const parsed = tryParse(code);
   if (!parsed) return code;
@@ -36,9 +47,9 @@ export async function run(code, ctx) {
     if (n.kind === 'if') {
       const t = truth(n.test);
       // if (!function_exists('f')) { function f() {...} } → f başka yerde tanımlı değilse koşulsuz
-      if (t === undefined && n.test.kind === 'unary' && n.test.type === '!' && n.test.what?.kind === 'call' &&
-        String(n.test.what.what?.name).toLowerCase() === 'function_exists' && n.test.what.arguments[0]?.kind === 'string' && !n.alternate) {
-        const fname = String(n.test.what.arguments[0].value).toLowerCase();
+      const fe = notExists(n.test);
+      if (t === undefined && fe && !n.alternate) {
+        const fname = String(fe.arguments[0].value).toLowerCase();
         const decls = info.functions.get(fname) ?? [];
         const body = n.body?.kind === 'block' ? n.body.children : [n.body];
         if (decls.length === 1 && body.length === 1 && body[0] === decls[0]) {

@@ -117,7 +117,8 @@ const JOBS = {
   'southern-nob64': { ...southern('$o->b64 = false;'), sources: ['mini'] },
   // krypt0nn: dizge/tamsayı kodlama, sessiz çağrılar
   'krypt0nn-strings': { ...krypt(['WhitespaceStrip', 'StringEncoder']), sources: ['mini', 'textutil'] },
-  'krypt0nn-all': { ...krypt(['WhitespaceStrip', 'StringEncoder', 'IntegerEncoder', 'SilentCalls']), sources: ['mini', 'textutil'] },
+  // IntegerEncoder textutil'de geçersiz kod üretiyor ($n--strrev(...)): yalnızca mini
+  'krypt0nn-all': { ...krypt(['WhitespaceStrip', 'StringEncoder', 'IntegerEncoder', 'SilentCalls']), sources: ['mini'] },
   // GLOBUS: belirteç tabanlı yeniden adlandırma + base64 dizgeler + eval sarmalayıcı
   'globus-default': { ...globus('seed: 42'), sources: ['inventory', 'textutil'] },
   'globus-noeval': { ...globus('seed: 7, wrapWithEval: false'), sources: ['mini', 'textutil'] },

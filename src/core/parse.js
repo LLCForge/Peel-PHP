@@ -23,8 +23,32 @@ const STATEMENTS = new Set(['program', 'expressionstatement', 'echo', 'return', 
   'enum', 'try', 'catch', 'throw', 'inline', 'halt', 'declare', 'namespace', 'usegroup', 'constantstatement',
   'propertystatement', 'classconstant', 'method', 'label', 'goto', 'traituse', 'noop']);
 
+const WS = (c) => c === ' ' || c === '\t' || c === '\n' || c === '\r';
+
 function trimExpressions(ast, code) {
   walk(ast, (n) => {
+    // "(eval(...));" — php-parser deyimi açılan parantezden sonra başlatır, ifadenin sonuna kapanışı katar:
+    // deyim parantezleri kapsasın, ifade kapsamasın (deyimden önce "(" ancak bu deyime ait olabilir)
+    if (n.kind === 'expressionstatement' && n.loc && n.expression?.loc) {
+      let s = n.loc.start.offset;
+      let k = 0;
+      for (let i = s - 1; i >= 0; i--) {
+        if (WS(code[i])) continue;
+        if (code[i] !== '(') break;
+        k++;
+        s = i;
+      }
+      if (k) {
+        n.loc = { ...n.loc, start: { ...n.loc.start, offset: s } }; // konum nesneleri ifadeyle paylaşılıyor olabilir
+        let e = n.expression.loc.end.offset;
+        for (let j = 0; j < k; j++) {
+          while (e > 0 && (WS(code[e - 1]) || code[e - 1] === ';')) e--;
+          if (code[e - 1] === ')') e--;
+        }
+        while (e > 0 && WS(code[e - 1])) e--;
+        n.expression.loc = { ...n.expression.loc, end: { ...n.expression.loc.end, offset: e } };
+      }
+    }
     if (STATEMENTS.has(n.kind) || !n.loc) return true;
     let e = n.loc.end.offset;
     const s = n.loc.start.offset;

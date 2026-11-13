@@ -71,14 +71,6 @@
     "bytes": 1281,
     "driver": "chdir('/tool');\nrequire 'obfuscator.php';\n$code = file_get_contents('/work/in.php');\n$out = Obfuscator\\Obfuscator::process($code, array('pipeline' => array(new Obfuscator\\Modules\\WhitespaceStrip, new Obfuscator\\Modules\\StringEncoder, new Obfuscator\\Modules\\IntegerEncoder, new Obfuscator\\Modules\\SilentCalls)));\nfile_put_contents('/work/out.php', $out);\n"
   },
-  "krypt0nn-all--textutil": {
-    "tool": "krypt0nn/php-obfuscator",
-    "job": "krypt0nn-all",
-    "source": "textutil",
-    "phpVersion": "8.3",
-    "bytes": 4767,
-    "driver": "chdir('/tool');\nrequire 'obfuscator.php';\n$code = file_get_contents('/work/in.php');\n$out = Obfuscator\\Obfuscator::process($code, array('pipeline' => array(new Obfuscator\\Modules\\WhitespaceStrip, new Obfuscator\\Modules\\StringEncoder, new Obfuscator\\Modules\\IntegerEncoder, new Obfuscator\\Modules\\SilentCalls)));\nfile_put_contents('/work/out.php', $out);\n"
-  },
   "krypt0nn-strings--mini": {
     "tool": "krypt0nn/php-obfuscator",
     "job": "krypt0nn-strings",

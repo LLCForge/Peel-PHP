@@ -61,9 +61,11 @@ export function expandLayers(code, trace) {
     if (!parsed) return src;
     // eval/assert/create_function düğümlerini başlangıç konumuyla bul
     const byStart = new Map();
+    const parents = new Map();
     walk(parsed.ast, (node, parent) => {
+      parents.set(node, parent);
       if (node.kind === 'eval' || node.kind === 'include' || (node.kind === 'call' && node.what?.kind === 'name')) {
-        byStart.set(node.loc.start.offset - shift, { node, parent });
+        byStart.set(node.loc.start.offset - shift, { node, parent, grand: parent ? parents.get(parent) : null });
       }
     });
     const edits = [];
@@ -83,15 +85,22 @@ export function expandLayers(code, trace) {
     return edits.length ? applyEdits(src, edits).code : src;
   }
 
-  function replace(kind, { node, parent }, payload) {
+  function replace(kind, { node, parent, grand }, payload) {
     const payloadAst = tryParse(EVAL_PREFIX + payload)?.ast;
     if (!payloadAst) return null;
     const ret = topLevelReturn(payloadAst);
     // include/require: kayıt "?>" + dosya içeriğidir; deyim olarak eval gibi yerine konur
     if (kind === 'eval' || kind === 'assert' || INCLUDES.has(kind)) {
-      // deyim olarak kullanılan eval: kod olduğu gibi yerine konur
-      if (parent?.kind === 'expressionstatement' && ret < 0) {
-        const [start, end] = span(parent);
+      // deyim olarak kullanılan eval (@eval(...) dahil): kod olduğu gibi yerine konur
+      const stmt = parent?.kind === 'expressionstatement' ? parent : parent?.kind === 'silent' && grand?.kind === 'expressionstatement' ? grand : null;
+      if (stmt && ret < 0) {
+        const [start, end] = span(stmt);
+        const tail = endsInPhpMode(payload) ? '' : '<?php ';
+        return { start, end, text: `\n${payload.trim()}\n${tail}` };
+      }
+      // eval(eval(X)); iç kod değer döndürmüyorsa dıştaki eval(null) boş koddur: deyim X'in kodu olur
+      if (kind === 'eval' && parent?.kind === 'eval' && grand?.kind === 'expressionstatement' && ret < 0) {
+        const [start, end] = span(grand);
         const tail = endsInPhpMode(payload) ? '' : '<?php ';
         return { start, end, text: `\n${payload.trim()}\n${tail}` };
       }
