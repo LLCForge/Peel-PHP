@@ -265,6 +265,7 @@ async function run() {
     const guarded = sandbox && { versions: sandbox.versions, run: guard(sandbox.run), evaluate: guard(sandbox.evaluate) };
     const res = await peel(src, {
       sandbox: guarded ?? false,
+      lang: getLang(),
       formatOutput: settings().format.enabled,
       signal,
       onLog: (m, level) => log(m, level),
