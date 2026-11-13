@@ -79,6 +79,9 @@ function candidate(s) {
     return { writes: new Set(s.variables.map((v) => v.name)), reads: new Set() };
   }
   if (s.kind === 'for' || s.kind === 'while' || s.kind === 'do') {
+    // bitmeyebilecek döngü silinmez (silmek programın anlamını değiştirir): koşulsuz for(;;), sabit doğru koşul
+    const tests = s.kind === 'for' ? s.test : [s.test];
+    if (!tests.length || tests.some((t) => ['boolean', 'number', 'string'].includes(t.kind) && t.value && t.value !== '0')) return null;
     const parts = s.kind === 'for' ? [...s.init, ...s.test, ...s.increment] : [s.test];
     const writes = new Set();
     const reads = new Set();
@@ -95,7 +98,8 @@ function candidate(s) {
       c.writes.forEach((w) => writes.add(w));
       c.reads.forEach((r) => reads.add(r));
     }
-    // döngü koşulunun okudukları döngünün kendi yazdıklarıysa döngü kendi başına canlı sayılmaz
+    // hiçbir değişkene yazmayan döngü ilerleyemez: bitmeyebilir, silinmez
+    if (!writes.size) return null;
     return { writes, reads };
   }
   return null;

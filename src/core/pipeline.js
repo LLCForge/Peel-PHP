@@ -22,6 +22,8 @@ async function pickVersion(sandbox, code, log) {
     const score = fatal * 1000 - (trace?.evals.length ?? 0);
     if (!best || score < best.score) best = { version, score, run: r, trace };
     if (r.ok && fatal === 0) break;
+    // zaman aşımı sürüme bağlı değildir (sonsuz döngü, ağır hesap): diğer sürümler denenmez
+    if (r.timedOut) { log(`PHP ${version}: zaman aşımı, diğer sürümler denenmedi`, 'warn'); break; }
     log(`PHP ${version}: ${r.ok ? `${fatal} fatal hata (${fatalOf(trace)[0]?.message ?? ''})` : r.error}`, 'info');
   }
   return best;
@@ -80,7 +82,8 @@ export async function deobfuscate(input, { sandbox = null, only = null, onLog = 
     version,
     log,
     bump: (k, n = 1) => { if (n) stats[k] = (stats[k] ?? 0) + n; },
-    trace: async (c) => decodeTrace((await runCode(c)).trace),
+    // kod hiç çalıştırılamadıysa (zaman aşımı, sandbox hatası) çalışma anı pass'leri yeniden denemez
+    trace: async (c) => (baseline ? decodeTrace((await runCode(c)).trace) : null),
     evaluate: (exprs) => sandbox.evaluate({ exprs, version }),
   };
 
