@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="PEEL: open-source PHP deobfuscator that runs entirely in your browser. Layers are unpacked in a WebAssembly PHP sandbox; your code never leaves your device.">
+  <meta name="theme-color" content="#0c0c0c">
+  <meta name="color-scheme" content="dark light">
+  <meta property="og:title" content="PEEL · PHP Deobfuscator">
+  <meta property="og:description" content="Open-source PHP deobfuscator. Runs in your browser, your code never leaves your device.">
+  <meta property="og:image" content="/peel-logo-horizontal-dark-1600.png">
+  <title>PEEL · PHP Deobfuscator</title>
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" href="/peel-icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/apple-touch-icon-180.png">
+  <link rel="stylesheet" href="/src/styles.css">
+  <link rel="manifest" href="/manifest.webmanifest">
+</head>
+<body>
+  <a class="skip" href="#ed-in" data-i18n="skip">İçeriğe geç</a>
+
+  <header class="topbar">
+    <a class="brand" href="./" aria-label="PEEL PHP">
+      <img src="/peel-icon.svg" alt="" width="32" height="32">
+      <span class="brand-text">
+        <span class="wordmark" aria-hidden="true">pee<span>l</span></span>
+        <span class="brand-sub" data-i18n="brand.sub">PHP DEOBFUSCATOR</span>
+      </span>
+    </a>
+    <div class="actions">
+      <button type="button" id="btn-palette" class="ghost small cmdk" data-i18n-label="palette.title" data-i18n-title="palette.title">
+        <span data-i18n="palette.button">Komutlar</span><kbd aria-hidden="true">Ctrl ⇧ P</kbd>
+      </button>
+      <button type="button" id="btn-settings" class="ghost small icon" data-i18n-label="settings.title" data-i18n-title="settings.title">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      </button>
+      <button type="button" id="btn-lang" class="ghost small">TR</button>
+      <button type="button" id="btn-load" class="ghost" aria-haspopup="menu" data-i18n="action.open">Dosya aç</button>
+      <button type="button" id="btn-stop" class="ghost danger" data-i18n="action.stop" hidden>Durdur</button>
+      <button type="button" id="btn-run" class="primary">
+        <span class="label" data-i18n="action.run">Çöz</span>
+        <kbd aria-hidden="true">Ctrl ↵</kbd>
+      </button>
+    </div>
+  </header>
+  <div id="passbar" aria-hidden="true"></div>
+  <nav id="doctabs" class="doctabs" role="tablist" data-i18n-label="ws.tabs"></nav>
+  <div class="mobile-switch" role="tablist" data-i18n-label="mobile.panes">
+    <button type="button" role="tab" id="mob-in" data-pane="in" aria-selected="true" aria-controls="pane-in" data-i18n="panel.input">Girdi</button>
+    <button type="button" role="tab" id="mob-out" data-pane="out" aria-selected="false" aria-controls="pane-out" tabindex="-1" data-i18n="panel.output">Çıktı</button>
+  </div>
+
+  <main id="main" data-mobile="in">
+    <section class="panel pane-in" id="pane-in" aria-labelledby="in-title">
+      <div class="ph">
+        <h2 id="in-title" data-i18n="panel.input">Girdi</h2>
+        <span class="count" id="in-info">0</span>
+        <div class="ph-actions">
+          <button type="button" id="btn-sample" class="tiny" data-i18n="action.sample">Örnek</button>
+          <button type="button" id="btn-clear" class="tiny" data-i18n="action.clear">Temizle</button>
+          <button type="button" id="btn-view-in" class="tiny" aria-haspopup="menu" data-i18n="view.menu">Görünüm</button>
+        </div>
+      </div>
+      <div class="body">
+        <div id="ed-in" class="editor-host"></div>
+        <div id="empty" class="empty">
+          <img src="/peel-icon.svg" alt="" width="88" height="88">
+          <p class="empty-title" data-i18n="empty.title">Gizlenmiş PHP kodunu yapıştır</p>
+          <p class="empty-body" data-i18n="empty.body">ya da bir .php dosyasını buraya sürükle. Kod tarayıcından çıkmaz.</p>
+          <div class="empty-actions">
+            <button type="button" id="btn-empty-open" class="ghost" data-i18n="action.open">Dosya aç</button>
+            <button type="button" id="btn-empty-sample" class="ghost accent" data-i18n="empty.sample">Örnek kodla dene</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div id="divider" class="divider" role="separator" aria-orientation="vertical" data-i18n-label="layout.resize"
+      aria-valuemin="20" aria-valuemax="80" aria-valuenow="50" aria-controls="pane-in pane-out" tabindex="0"></div>
+
+    <section class="panel pane-out" id="pane-out" aria-labelledby="out-title">
+      <div class="ph">
+        <h2 id="out-title" class="sr-only" data-i18n="panel.output">Çıktı</h2>
+        <div class="tabs" role="tablist" aria-labelledby="out-title">
+          <button type="button" role="tab" id="tab-code" aria-controls="view-code" aria-selected="true" data-i18n="tab.code">Kod</button>
+          <button type="button" role="tab" id="tab-report" aria-controls="view-report" aria-selected="false" tabindex="-1" data-i18n="tab.report">Rapor</button>
+          <button type="button" role="tab" id="tab-timeline" aria-controls="view-timeline" aria-selected="false" tabindex="-1" data-i18n="tab.timeline">Zaman çizelgesi</button>
+          <button type="button" role="tab" id="tab-diff" aria-controls="view-diff" aria-selected="false" tabindex="-1" data-i18n="tab.diff">Fark</button>
+        </div>
+        <span class="count" id="out-info">0</span>
+        <div class="ph-actions">
+          <button type="button" id="btn-reading" class="tiny" aria-pressed="false" data-i18n="view.reading">Okuma</button>
+          <button type="button" id="btn-view-out" class="tiny" aria-haspopup="menu" data-i18n="view.menu">Görünüm</button>
+          <button type="button" id="btn-copy" class="tiny" data-i18n="action.copy" disabled>Kopyala</button>
+          <button type="button" id="btn-dl" class="tiny" data-i18n="action.download" disabled>İndir</button>
+        </div>
+      </div>
+      <div class="body">
+        <div id="view-code" class="view editor-host" role="tabpanel" aria-labelledby="tab-code"></div>
+        <div id="view-report" class="view scroll" role="tabpanel" aria-labelledby="tab-report" tabindex="0" hidden></div>
+        <div id="view-timeline" class="view" role="tabpanel" aria-labelledby="tab-timeline" hidden></div>
+        <div id="view-diff" class="view scroll mono" role="tabpanel" aria-labelledby="tab-diff" tabindex="0" hidden></div>
+      </div>
+    </section>
+  </main>
+
+  <div id="log" role="log" aria-live="polite" data-i18n-label="action.log" hidden></div>
+
+  <footer class="statusbar">
+    <span id="status" role="status">Hazır</span>
+    <div id="stats"></div>
+    <span id="cursor" class="cursor-pos" aria-live="off"></span>
+    <span id="net" class="net" hidden></span>
+    <button type="button" id="btn-log" class="tiny" aria-expanded="false" aria-controls="log" data-i18n="action.log">Kayıt</button>
+  </footer>
+
+  <input type="file" id="file" multiple accept=".php,.php3,.php4,.php5,.php7,.php8,.phtml,.phps,.inc,.module,.tpl,.txt,application/x-php,text/plain" hidden>
+  <input type="file" id="folder" webkitdirectory multiple hidden>
+  <input type="file" id="session-file" accept=".json,application/json" hidden>
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>

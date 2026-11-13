@@ -1,0 +1,22 @@
+{
+  "name": "PEEL · PHP Deobfuscator",
+  "short_name": "PEEL PHP",
+  "description": "Open-source PHP deobfuscator that runs entirely in your browser. Works offline; your code never leaves your device.",
+  "id": "./",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0c0c0c",
+  "theme_color": "#0c0c0c",
+  "categories": ["developer", "security", "utilities"],
+  "icons": [
+    { "src": "peel-icon-256.png", "sizes": "256x256", "type": "image/png", "purpose": "any" },
+    { "src": "peel-icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "peel-icon-1024.png", "sizes": "1024x1024", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "peel-icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ],
+  "file_handlers": [
+    { "action": "./", "accept": { "application/x-php": [".php", ".phtml", ".inc"] } }
+  ]
+}
