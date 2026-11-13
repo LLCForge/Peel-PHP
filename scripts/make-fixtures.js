@@ -33,6 +33,16 @@ fx['eval-chain'] = `<?php
 @E(base64_decode('${b64(l2)}'));
 `;
 
+// yalnızca fonksiyon tanımlayan kütüphane payload'ı: hiç çağrılmayan fonksiyonlar silinmez, açıcı yardımcısı silinir
+fx['library-keep'] = `<?php
+// KEEP: function kategoriAta
+// KEEP: function topla
+// GONE: function unpack_it
+// GONE: base64_decode
+function unpack_it($c) { @E(base64_decode($c)); }
+unpack_it('${b64("function topla($a, $b) { return $a + $b; } function kategoriAta($n) { return $n < 50 ? 'dusuk' : 'yuksek'; }")}');
+`;
+
 fx['var-func'] = `<?php
 // EXPECT: echo 'hello';
 // GONE: $a

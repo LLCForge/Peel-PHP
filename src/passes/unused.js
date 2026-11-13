@@ -242,9 +242,13 @@ export async function run(code, ctx) {
     return true;
   });
   let removedFns = 0;
+  // yalnızca önceki bir turda çağrılan (açıcı yardımcısı gibi, çağrısı artık açılmış) fonksiyonlar silinir;
+  // hiç çağrılmamış fonksiyon kütüphane kodu olabilir (include edilecek dosya), payload'ın kendisidir
+  ctx.calledFns ??= new Set();
+  for (const name of info.calls.keys()) ctx.calledFns.add(name);
   if (!dynamicCalls && !info.dynamicCallback) {
     for (const [name, decls] of info.functions) {
-      if (info.calls.has(name) || info.strings.has(name)) continue;
+      if (info.calls.has(name) || info.strings.has(name) || !ctx.calledFns.has(name)) continue;
       for (const d of decls) {
         edits.push({ start: d.loc.start.offset, end: d.loc.end.offset, text: '' });
         removedFns++;
