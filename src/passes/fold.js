@@ -52,7 +52,7 @@ export async function run(code, ctx) {
   walk(parsed.ast, (n, parent, key) => {
     if (!isConst(n)) return true;
     // atama hedefi, static/const başlatıcıları, varsayılan parametre değerleri yerinde bırakılır (sabit ifade kuralları)
-    if (key === 'left' || parent?.kind === 'staticvariable' || parent?.kind === 'constant' || parent?.kind === 'parameter') return false;
+    if ((key === 'left' && parent?.kind === 'assign') || parent?.kind === 'staticvariable' || parent?.kind === 'constant' || parent?.kind === 'parameter') return false;
     if (n.kind === 'array' && n.items.every((e) => isPlain(e.value) && (!e.key || isPlain(e.key)))) return false;
     if (!isPlain(n) && n.kind !== 'array') targets.push(n);
     return n.kind === 'array';

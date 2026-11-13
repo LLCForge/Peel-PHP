@@ -27,7 +27,7 @@ export const STUBBED = [
 export const FIXED_TIME = 1704067200;
 
 export const PRELUDE = String.raw`<?php
-$GLOBALS['__peel'] = array('evals' => array(), 'fx' => array(), 'errors' => array(), 'sites' => array(), 'obs' => array());
+$GLOBALS['__peel'] = array('evals' => array(), 'fx' => array(), 'errors' => array(), 'sites' => array(), 'obs' => array(), 'incs' => array());
 
 // gözlem: dönüşümün koşul değerini çalışma anında görmesi için (yalnızca analiz çalıştırmalarında eklenir)
 function __peel_obs($id, $v) {
@@ -57,10 +57,124 @@ function __peel_rec($code, $site) {
   return __peel_instrument($code, 'e' . $id . '.', false);
 }
 
-// token düzeyinde: eval( X ) -> eval(__peel_rec( X , 'site')) ; create_function/assert de aynı biçimde
-function __peel_instrument($src, $prefix, $isFile) {
+// include/require: çalışma anında yazılan dosyalar (geçici dosyaya yazıp include eden encoder'lar) eval gibi
+// kaydedilir. Kayıt, başına kapanış etiketi eklenmiş içeriktir: eval böyle bir kodu include ile aynı biçimde çalıştırır. Dosyanın kendisi atlanır.
+function __peel_inc($path, $site) {
+  if (!is_string($path)) return $path;
+  $real = __peel_fs::real($path);
+  if ($real === '${INPUT_PATH}' || $real === false) return $path;
+  $src = __peel_fs::read($path);
+  if ($src === false) return $path;
+  $id = count($GLOBALS['__peel']['evals']);
+  if ($id >= 5000) return $path;
+  $GLOBALS['__peel']['evals'][] = array('site' => $site, 'code' => base64_encode('?' . '>' . $src));
+  $GLOBALS['__peel']['incs'][$real] = 'e' . $id . '.';
+  return $path;
+}
+
+// "file" akış sarmalayıcısı: kod kendi dosyasını (bütünlük denetimi, __halt_compiler verisi) okuduğunda özgün baytları
+// görür; yalnızca include ile açılan dosya araçlanmış hâliyle sunulur. Diğer her işlem gerçek dosyaya geçer.
+class __peel_fs {
+  var $context;
+  var $h = null;
+  var $buf = null;
+  var $at = 0;
+  static function on() { @stream_wrapper_unregister('file'); stream_wrapper_register('file', '__peel_fs'); }
+  static function off() { @stream_wrapper_restore('file'); }
+  static function real($path) { __peel_fs::off(); $r = realpath($path); __peel_fs::on(); return $r; }
+  static function read($path) {
+    __peel_fs::off();
+    $h = @fopen($path, 'rb');
+    $s = $h ? stream_get_contents($h) : false;
+    if ($h) fclose($h);
+    __peel_fs::on();
+    return $s;
+  }
+  function stream_open($path, $mode, $options, &$opened) {
+    // 128 = STREAM_OPEN_FOR_INCLUDE
+    if ($options & 128) {
+      $real = __peel_fs::real($path);
+      $src = __peel_fs::read($path);
+      if ($src === false) return false;
+      if ($real === '${INPUT_PATH}') $this->buf = __peel_instrument($src, 'f.', true, 0);
+      elseif (isset($GLOBALS['__peel']['incs'][$real])) $this->buf = __peel_instrument($src, $GLOBALS['__peel']['incs'][$real], true, 2);
+      else $this->buf = $src;
+      $opened = $real;
+      return true;
+    }
+    __peel_fs::off();
+    $this->h = ($options & STREAM_REPORT_ERRORS) ? fopen($path, $mode, (bool) ($options & STREAM_USE_PATH)) : @fopen($path, $mode, (bool) ($options & STREAM_USE_PATH));
+    __peel_fs::on();
+    if ($this->h && ($options & STREAM_USE_PATH)) $opened = $path;
+    return $this->h !== false;
+  }
+  function stream_read($n) {
+    if ($this->buf !== null) { $r = (string) substr($this->buf, $this->at, $n); $this->at += strlen($r); return $r; }
+    return fread($this->h, $n);
+  }
+  function stream_write($d) { return $this->buf !== null ? 0 : fwrite($this->h, $d); }
+  function stream_eof() { return $this->buf !== null ? $this->at >= strlen($this->buf) : feof($this->h); }
+  function stream_tell() { return $this->buf !== null ? $this->at : ftell($this->h); }
+  function stream_seek($o, $w) {
+    if ($this->buf === null) return fseek($this->h, $o, $w) === 0;
+    $n = $w === SEEK_SET ? $o : ($w === SEEK_CUR ? $this->at + $o : strlen($this->buf) + $o);
+    if ($n < 0) return false;
+    $this->at = $n;
+    return true;
+  }
+  function stream_stat() { return $this->buf !== null ? array('size' => strlen($this->buf), 'mode' => 0100644) : fstat($this->h); }
+  function stream_flush() { return $this->buf !== null ? true : fflush($this->h); }
+  function stream_close() { if ($this->h) fclose($this->h); $this->h = null; }
+  function stream_lock($op) { return $this->buf !== null ? false : flock($this->h, $op); }
+  function stream_truncate($n) { return $this->buf !== null ? false : ftruncate($this->h, $n); }
+  function stream_set_option($o, $a, $b) { return false; }
+  function stream_cast($as) { return $this->h ? $this->h : false; }
+  function stream_metadata($path, $option, $value) {
+    __peel_fs::off();
+    if ($option === 1) $r = @touch($path, isset($value[0]) ? $value[0] : null, isset($value[1]) ? $value[1] : null);
+    elseif ($option === 6) $r = @chmod($path, $value);
+    else $r = false;
+    __peel_fs::on();
+    return $r;
+  }
+  function url_stat($path, $flags) {
+    __peel_fs::off();
+    $r = ($flags & STREAM_URL_STAT_LINK) ? @lstat($path) : @stat($path);
+    __peel_fs::on();
+    return $r;
+  }
+  function unlink($path) { __peel_fs::off(); $r = unlink($path); __peel_fs::on(); return $r; }
+  function rename($a, $b) { __peel_fs::off(); $r = rename($a, $b); __peel_fs::on(); return $r; }
+  function mkdir($path, $mode, $options) { __peel_fs::off(); $r = mkdir($path, $mode, (bool) ($options & STREAM_MKDIR_RECURSIVE)); __peel_fs::on(); return $r; }
+  function rmdir($path, $options) { __peel_fs::off(); $r = rmdir($path); __peel_fs::on(); return $r; }
+  function dir_opendir($path, $options) { __peel_fs::off(); $this->h = @opendir($path); __peel_fs::on(); return $this->h !== false; }
+  function dir_readdir() { return readdir($this->h); }
+  function dir_rewinddir() { rewinddir($this->h); return true; }
+  function dir_closedir() { closedir($this->h); return true; }
+}
+
+// __halt_compiler sonrası verinin özgün dosyadaki konumu (araçlanmış kopyada kayar)
+function __peel_halt_offset($tokens) {
+  $pos = 0;
+  $state = 0;
+  foreach ($tokens as $t) {
+    $text = is_array($t) ? $t[1] : $t;
+    $pos += strlen($text);
+    if ($state === 0) { if (is_array($t) && $t[0] === T_HALT_COMPILER) $state = 1; continue; }
+    if (is_array($t) && ($t[0] === T_WHITESPACE || $t[0] === T_COMMENT || $t[0] === T_DOC_COMMENT)) continue;
+    if ($state === 1 && $text === '(') { $state = 2; continue; }
+    if ($state === 2 && $text === ')') { $state = 3; continue; }
+    if ($state === 3 && ($text === ';' || (is_array($t) && $t[0] === T_CLOSE_TAG))) return $pos;
+    return null;
+  }
+  return null;
+}
+
+// token düzeyinde: eval( X ) -> eval(__peel_rec( X , 'site')) ; create_function/assert ve include( X ) de aynı biçimde
+function __peel_instrument($src, $prefix, $isFile, $base = 0) {
   if (!function_exists('token_get_all')) return $src;
   $tokens = token_get_all($isFile ? $src : '<?php ' . $src);
+  $haltAt = $isFile ? __peel_halt_offset($tokens) : null;
   $out = '';
   $n = 0;
   $depth = 0;
@@ -68,7 +182,8 @@ function __peel_instrument($src, $prefix, $isFile) {
   $pending = null;
   $halted = false;
   $skipFirst = !$isFile;
-  $pos = 0;
+  $pos = $base;
+  $incs = array(T_INCLUDE => 'include', T_INCLUDE_ONCE => 'include_once', T_REQUIRE => 'require', T_REQUIRE_ONCE => 'require_once');
   foreach ($tokens as $i => $t) {
     if ($skipFirst) { $skipFirst = false; continue; }
     $text = is_array($t) ? $t[1] : $t;
@@ -76,6 +191,9 @@ function __peel_instrument($src, $prefix, $isFile) {
     $pos += strlen($text);
     if ($halted) { $out .= $text; continue; }
     if (is_array($t) && $t[0] === T_HALT_COMPILER) { $halted = true; $out .= $text; continue; }
+    // __COMPILER_HALT_OFFSET__ özgün dosyadaki konumu göstermeli (kod kendi dosyasını özgün hâliyle okur)
+    if ($haltAt !== null && is_array($t) && $t[0] === T_STRING && strtoupper($t[1]) === '__COMPILER_HALT_OFFSET__') { $out .= '(' . $haltAt . ')'; continue; }
+    if (is_array($t) && isset($incs[$t[0]])) { $pending = $incs[$t[0]]; $pendingAt = $at; $out .= $text; continue; }
     if (is_array($t) && ($t[0] === T_EVAL || ($t[0] === T_STRING && (strtolower($t[1]) === 'assert' || strtolower($t[1]) === 'create_function')))) {
       $prev = $i > 0 ? $tokens[$i - 1] : null;
       $isMethod = is_array($prev) && ($prev[0] === T_OBJECT_OPERATOR || $prev[0] === T_DOUBLE_COLON || $prev[0] === T_FUNCTION);
@@ -93,6 +211,9 @@ function __peel_instrument($src, $prefix, $isFile) {
         if ($pending === 'create_function') {
           $out .= '(';
           $wrap[] = array($depth, 'cf', $site);
+        } elseif (in_array($pending, $incs, true)) {
+          $out .= '(__peel_inc(';
+          $wrap[] = array($depth, 'rec', $site);
         } else {
           $out .= '(__peel_rec(';
           $wrap[] = array($depth, 'rec', $site);
@@ -131,6 +252,7 @@ function __peel_instrument($src, $prefix, $isFile) {
 
 function __peel_shutdown() {
   $e = error_get_last();
+  @stream_wrapper_restore('file');
   if ($e) $GLOBALS['__peel']['errors'][] = array($e['type'], $e['message'], $e['line']);
   $fx = array();
   foreach ($GLOBALS['__peel']['fx'] as $f) { $a = array(); foreach ($f[1] as $x) $a[] = is_string($x) ? base64_encode($x) : $x; $fx[] = array($f[0], $a); }
@@ -223,15 +345,16 @@ if (!function_exists('create_function')) {
 }
 `;
 
-// Çalıştırıcı: özgün dosya token düzeyinde araçlanır ve aynı yola yazılıp include edilir (__FILE__ korunur,
-// __halt_compiler sonrasındaki veri dokunulmadan kalır)
+// Çalıştırıcı: özgün dosya aynı yola yazılır; include edilirken "file" sarmalayıcısı araçlanmış hâlini sunar (__FILE__ ve
+// kodun kendi dosyasını okuması özgün baytları görür; __halt_compiler sonrasındaki veri dokunulmadan kalır)
 export const RUNNER = String.raw`<?php
 require '/peel/prelude.php';
 $__peel_src = implode('', file('${ORIGINAL_PATH}'));
-$__peel_h = fopen('${INPUT_PATH}', 'w');
-fwrite($__peel_h, __peel_instrument($__peel_src, 'f.', true));
+$__peel_h = fopen('${INPUT_PATH}', 'wb');
+fwrite($__peel_h, $__peel_src);
 fclose($__peel_h);
 unset($__peel_src, $__peel_h);
 chdir('/app');
+__peel_fs::on();
 include '${INPUT_PATH}';
 `;

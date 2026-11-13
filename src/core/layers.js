@@ -5,6 +5,7 @@ import { fromBase64 } from './bstr.js';
 import { tryParse, walk, span, applyEdits, endsInPhpMode, EVAL_PREFIX } from './parse.js';
 
 const MAX_DEPTH = 64;
+const INCLUDES = new Set(['include', 'include_once', 'require', 'require_once']);
 
 /** Trace'i çözülmüş biçime getirir: evals[i] = { site, code (bstr) }, sites = { site: [kind, start, end] } */
 export function decodeTrace(trace) {
@@ -61,7 +62,7 @@ export function expandLayers(code, trace) {
     // eval/assert/create_function düğümlerini başlangıç konumuyla bul
     const byStart = new Map();
     walk(parsed.ast, (node, parent) => {
-      if (node.kind === 'eval' || (node.kind === 'call' && node.what?.kind === 'name')) {
+      if (node.kind === 'eval' || node.kind === 'include' || (node.kind === 'call' && node.what?.kind === 'name')) {
         byStart.set(node.loc.start.offset - shift, { node, parent });
       }
     });
@@ -86,7 +87,8 @@ export function expandLayers(code, trace) {
     const payloadAst = tryParse(EVAL_PREFIX + payload)?.ast;
     if (!payloadAst) return null;
     const ret = topLevelReturn(payloadAst);
-    if (kind === 'eval' || kind === 'assert') {
+    // include/require: kayıt "?>" + dosya içeriğidir; deyim olarak eval gibi yerine konur
+    if (kind === 'eval' || kind === 'assert' || INCLUDES.has(kind)) {
       // deyim olarak kullanılan eval: kod olduğu gibi yerine konur
       if (parent?.kind === 'expressionstatement' && ret < 0) {
         const [start, end] = span(parent);
@@ -94,7 +96,7 @@ export function expandLayers(code, trace) {
         return { start, end, text: `\n${payload.trim()}\n${tail}` };
       }
       // değeri kullanılan eval: kod tek bir "return X;" ise ifade X olur
-      if (ret === 0 && payloadAst.children.length === 1 && payloadAst.children[0].expr) {
+      if (!INCLUDES.has(kind) && ret === 0 && payloadAst.children.length === 1 && payloadAst.children[0].expr) {
         const r = payloadAst.children[0].expr;
         const [s, e] = span(r);
         const expr = (EVAL_PREFIX + payload).slice(s, e);
