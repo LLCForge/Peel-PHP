@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 1180" width="820" height="1180">
+
+<defs>
+  <clipPath id="tileClip"><path d="M 132 250 Q 132 150 232 150 L 792 150 Q 892 150 892 250 L 892 750 L 732 910 L 232 910 Q 132 910 132 810 Z"/></clipPath>
+  <linearGradient id="tileGrad" x1="0" y1="0" x2="0.3" y2="1">
+    <stop offset="0" stop-color="#9A9ED6"/>
+    <stop offset="0.55" stop-color="#777BB4"/>
+    <stop offset="1" stop-color="#5B5F9C"/>
+  </linearGradient>
+  <radialGradient id="faceClear" cx="0.5" cy="0.52" r="0.5">
+    <stop offset="0" stop-color="#777BB4" stop-opacity="0.92"/>
+    <stop offset="0.7" stop-color="#777BB4" stop-opacity="0.55"/>
+    <stop offset="1" stop-color="#777BB4" stop-opacity="0"/>
+  </radialGradient>
+  <linearGradient id="flapGrad" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0" stop-color="#FFFFFF"/>
+    <stop offset="1" stop-color="#DBDCE2"/>
+  </linearGradient>
+  <radialGradient id="holeGrad" cx="0.85" cy="0.85" r="0.9">
+    <stop offset="0" stop-color="#000000" stop-opacity="0.28"/>
+    <stop offset="1" stop-color="#000000" stop-opacity="0"/>
+  </radialGradient>
+  <filter id="softBlur" x="-20%" y="-20%" width="140%" height="140%">
+    <feGaussianBlur stdDeviation="9"/>
+  </filter>
+  <filter id="stickerShadow" x="-25%" y="-25%" width="150%" height="150%">
+    <feDropShadow dx="0" dy="14" stdDeviation="20" flood-color="#000000" flood-opacity="0.22"/>
+  </filter>
+</defs>
+
+<g transform="translate(130.0,60) scale(0.546875)">
+  <g filter="url(#stickerShadow)">
+    <path d="M 132 250 Q 132 150 232 150 L 792 150 Q 892 150 892 250 L 892 750 L 732 910 L 232 910 Q 132 910 132 810 Z" fill="url(#tileGrad)"/>
+    <g clip-path="url(#tileClip)">
+      <text x="150" y="182.0" font-size="23" opacity="0.43" fill="#000000" font-family="DejaVu Sans Mono, monospace" letter-spacing="0.5">|&amp;=)DB 6  0x969B E  0x90 D-  });A- &amp;F4  1: 0 .A63XD  X4b 2 0x630 0x7E  ~.+ </text>
+<text x="150" y="204.2" font-size="23" opacity="0.48" fill="#000000" font-family="DejaVu Sans Mono, monospace" letter-spacing="0.5">0xC01F 0.2&amp;4b  Cb1  CF~ 2  ~-E&lt;3 0xEF5 _9e! 0xBEB -^  ]5;a8 {_^A !9;f  .8 </text>
+<text x="150" y="226.4" font-size="23" opacity="0.48" fill="#000000" font-family="DejaVu Sans Mono, monospace" letter-spacing="0.5">7=  . &amp;AE  e&gt;X/ 0xD37  0x603F dF _!6 0x365  0x3DB  0x9ACB ,+!  2 a~+(  ,: </text>
+<text x="150" y="248.6" font-size="23" opacity="0.44" fill="#000000" font-family="DejaVu Sans Mono, monospace" letter-spacing="0.5">- 55F&gt;&lt;! fF;+2e 0x304  { ~. 7  0x951 ^94C 0x5C1 0xF7E3 0x0EFB  0xB3DF ~]</text>
+<text x="150" y="270.8" font-size="23" opacity="0.39" fill="#000000" font-family="DejaVu Sans Mono, monospace" letter-spacing="0.5">=F87 0x6E  +4&amp;B  0x76 0xC0B1  0x8094 DC&amp; 6B(/!!  0x42 F! a[3] 1C&amp;&gt; E8+:= </text>
+<text x="150" y="293.0" font-size="23" opacity="0.52" fill="#000000" font-family="DejaVu Sans Mono, monospace" letter-spacing="0.5">0x9F2D  / 2X |fd_; +=- 5~ :!4a  c;= eF.C 0xD88  C:8~c /eD}  0x976A )+&lt;b.} </text>
+<text x="150" y="315.2" font-size="23" opacity="0.36" fill="#000000" font-family="DejaVu Sans Mono, monospace" letter-spacing="0.5">(/ 0xFE8  0xDF  (e 0x112 b8 0x103A  FEE  xF9 A(D_  5  76F 0x5578 0xDCE 0x</text>
+<text x="150" y="337.4" font-size="23" opacity="0.49" fill="#000000" font-family="DejaVu Sans Mono, monospace" letter-spacing="0.5">(1_bD  %fe1-=  ;DX9&lt; 0x66A &lt;cE(; . 1(  1-]&gt; 0xB78 AE,  (X3 A5  % 0xD8 A%4 </text>
+<text x="150" y="359.6" font-size="23" opacity="0.35" fill="#000000" font-family="DejaVu Sans Mono, monospace" letter-spacing="0.5">B AF1C;&lt; bB  /X  0x70 =1  A 0x7B  }B&lt; 0x12C4 -^)  }|%x;  %[A=- 0xB93D 1e-C1</text>
+<text x="150" y="381.8" font-size="23" opacity="0.5" fill="#000000" font-family="DejaVu Sans Mono, monospace" letter-spacing="0.5">,8  91E }&lt;} [3F 3x ]4;cx  0x2BA A06 0x6B0E }x:e 0x3EFD  /  9( !b99C5  E22</text>
+<text x="150" y="404.0" font-size="23" opacity="0.42" fill="#000000" font-family="DejaVu Sans Mono, monospace" letter-spacing="0.5">9]/  D04 + A^- f:  a.//  e%9&amp;  FE1 =d-&gt;)3  a69  EF} =X fd5FA  &amp;4e3]) 1f </text>
+<text x="150" y="426.2" font-size="23" opacity="0.4" fill="#000000" font-family="DejaVu Sans Mono, monospace" letter-spacing="0.5">-),D)] 0xA5  5655  0xF24 2 X^^  52Ad 0x2106 -6b,c  c8 aA|~=6 2)f  {x  &lt;)[ </text>
+<text x="150" y="448.4" font-size="23" opacity="0.55" fill="#000000" font-family="DejaVu Sans Mono, monospace" letter-spacing="0.5">DF} 0x34 0x29AA  ][7  D+| 0xB2 a }&amp; e&lt;]&amp; 0x8D f928F=  C&gt;B[20  :Xf0 =CD9f^  </text>
+<text x="150" y="470.6" font-size="23" opacity="0.49" fill="#000000" font-family="DejaVu Sans Mono, monospace" letter-spacing="0.5">%,:  &gt;2}  }2c ! [};.Ee  d|2 0%E {F) 0x8D &amp;3-  /c7 fB_|C 0x7F03 0x8D5 X6c </text>
+<text x="150" y="492.8" font-size="23" opacity="0.48" fill="#000000" font-family="DejaVu Sans Mono, monospace" letter-spacing="0.5">0x30 bB =_}=7+  x5x _a&gt;1: 0x56F  0xD3C 0xF27F  |XC22{ 1  [0e} ;%  +-  0xA7 </text>
+<text x="150" y="515.0" font-size="23" opacity="0.51" fill="#000000" font-family="DejaVu Sans Mono, monospace" letter-spacing="0.5">0x19  (9 4%X4 [11 0x43 0xAA3 5E3 /_5  &amp;d6 [ 3846  0x1FB ,/ B|  1+ 0x7D08  </text>
+<text x="150" y="537.2" font-size="23" opacity="0.49" fill="#000000" font-family="DejaVu Sans Mono, monospace" letter-spacing="0.5">F3] 0x9B4C  cbF:7  ;-07)  ~8. F8  0x12  0x83  &lt; f 0x3BAD C!9 &amp;&amp;F-- 0xDE </text>
+<text x="150" y="559.4" font-size="23" opacity="0.5" fill="#000000" font-family="DejaVu Sans Mono, monospace" letter-spacing="0.5">% c9c 0+  xd  ~b+ 0xE4 (E/  0xB838  14. aF&amp;  %0 ~  0+CB6  ]a~ &amp;;.  0x67A </text>
+<text x="150" y="581.6" font-size="23" opacity="0.4" fill="#000000" font-family="DejaVu Sans Mono, monospace" letter-spacing="0.5">_f-E]/ 0x7D _46  EDDX62 [ {D5 5a;  0x850F 65=,E  0xBBE5 .1  0x71  0x64 0x741 </text>
+<text x="150" y="603.8" font-size="23" opacity="0.53" fill="#000000" font-family="DejaVu Sans Mono, monospace" letter-spacing="0.5">d^] A+ 0x5D D4 0x58  A;_&amp;  ]B: ;D&gt; (_} 83 )|  0x74 ;  0x2A28 B2]- E~  :{ </text>
+<text x="150" y="626.0" font-size="23" opacity="0.49" fill="#000000" font-family="DejaVu Sans Mono, monospace" letter-spacing="0.5">e} f12 ~ 0x22  6{_  0x04BA =| 5_9  %49Bc=  + 2;30&amp; !f5 )(. b=E XdA. 2  0x7D  </text>
+<text x="150" y="648.2" font-size="23" opacity="0.47" fill="#000000" font-family="DejaVu Sans Mono, monospace" letter-spacing="0.5">1:!%B8 3 %7/%0 |B/ F%C(&lt;C  F9  0x959 0xD4 0x82E !(AxX 0xBA  &gt;1  d[ %=1 /~  </text>
+<text x="150" y="670.4" font-size="23" opacity="0.37" fill="#000000" font-family="DejaVu Sans Mono, monospace" letter-spacing="0.5">8}:  f 3cF 0x68A  E9 0xEE31  0x6F eE &gt;45:= 6}=[  0x60 [7  %0 !~-a&gt; [0  :</text>
+<text x="150" y="692.6" font-size="23" opacity="0.4" fill="#000000" font-family="DejaVu Sans Mono, monospace" letter-spacing="0.5">%!  0x77C  1,8[CA  ;;  0x8AA 0x94  2X!1f ]]2%~6 12 D ;51(9  0x6356 ]=/B </text>
+<text x="150" y="714.8" font-size="23" opacity="0.35" fill="#000000" font-family="DejaVu Sans Mono, monospace" letter-spacing="0.5">/|9:D% 27F { +&amp;/% 0xB3 {~  3  ,&lt;4c &lt;{ ;&lt;  .(&amp;c/  0x94BC  0x3909  C6B ]).</text>
+<text x="150" y="737.0" font-size="23" opacity="0.42" fill="#000000" font-family="DejaVu Sans Mono, monospace" letter-spacing="0.5">+ }[1|{ &gt;E%  &amp;;X  %8&amp;  c &amp;79~  /9),x  b5  x[!4D 6^^9C% 7aCb 0x810 00&amp;=]; </text>
+<text x="150" y="759.2" font-size="23" opacity="0.34" fill="#000000" font-family="DejaVu Sans Mono, monospace" letter-spacing="0.5">0x622  f13 :|b5c  e3 !%C,{  3&gt;XE! 0xEE9 0x4CD  x1  -&gt;  3A.~;4 %  0x66 0xA</text>
+<text x="150" y="781.4" font-size="23" opacity="0.37" fill="#000000" font-family="DejaVu Sans Mono, monospace" letter-spacing="0.5">0x2E06 0x0C F=&amp; _. 0xE2  ,3&gt; 0x913 3F{ )+_ -&amp;  40 ,_ a% f-  0x773  e[ 0x0FD </text>
+<text x="150" y="803.6" font-size="23" opacity="0.53" fill="#000000" font-family="DejaVu Sans Mono, monospace" letter-spacing="0.5">~3 0x40B 5&amp;ABE  A5)^  0xE38 %| 8e  ;2/,_  0x9054 ;~&gt;E  ;&lt;~a= ;f  cx 2~|{5</text>
+<text x="150" y="825.8" font-size="23" opacity="0.53" fill="#000000" font-family="DejaVu Sans Mono, monospace" letter-spacing="0.5">+C_&amp;B 4:4&gt;!&amp; -(_9:. 98e%.C _ B  ~b1  ((&gt;: 1^7Ab_ baB% C8x:cB  8^_  EC_  </text>
+<text x="150" y="848.0" font-size="23" opacity="0.4" fill="#000000" font-family="DejaVu Sans Mono, monospace" letter-spacing="0.5">^^ f&gt; f( ,E  ;^X =6/  1|-%a 0xF98 0x323F  0xA7 0x6C9 6eeC X:D %6F]{e b 52</text>
+<text x="150" y="870.2" font-size="23" opacity="0.43" fill="#000000" font-family="DejaVu Sans Mono, monospace" letter-spacing="0.5">%+  8 8 8f/] ,  {_{bd f= f&gt;, e&lt;:c :7 18022 E,| 8| 4D0e 0xD5  c%  :&lt;-9-  </text>
+<text x="150" y="892.4" font-size="23" opacity="0.42" fill="#000000" font-family="DejaVu Sans Mono, monospace" letter-spacing="0.5">c|[908 cD B&lt;_ 0x46  |0  3(0 -AD  _A+)%&lt; 0xBF X/!b .2 =&amp;  &amp;/F&gt;6) 7| 0x66E6  </text>
+      <rect x="270" y="320" width="470" height="430" fill="url(#faceClear)"/>
+      <path d="M 392 442 L 470 505 L 392 568" fill="none" stroke="#111111" stroke-width="48" stroke-linecap="round" stroke-linejoin="round"/><path d="M 632 442 L 554 505 L 632 568" fill="none" stroke="#111111" stroke-width="48" stroke-linecap="round" stroke-linejoin="round"/><path d="M 452 660 L 572 660" fill="none" stroke="#111111" stroke-width="48" stroke-linecap="round"/>
+    </g>
+    <path d="M 732 910 L 892 910 L 892 750 Z" fill="url(#holeGrad)"/><path d="M 732 910 L 892 750 Q 662 820 732 750 Q 740 870 732 910 Z" fill="#000000" opacity="0.18" filter="url(#softBlur)" transform="translate(-10,-6)"/><path d="M 732 910 L 892 750 Q 872 820 732 750 Q 734 900 732 910 Z" fill="url(#flapGrad)" stroke="#E6E7EB" stroke-width="1.2"/><path d="M 732 910 L 892 750" stroke="#000000" opacity="0.10" stroke-width="2"/>
+  </g>
+</g>
+<g font-family="DejaVu Sans, sans-serif" text-anchor="middle">
+  <text x="410.0" y="880" font-size="190" font-weight="bold" letter-spacing="-6" fill="#111111">pee<tspan fill="#5B5F9C">l</tspan></text>
+  <text x="410.0" y="945" font-size="40" letter-spacing="12" fill="#6b6b72" font-family="DejaVu Sans Mono, monospace">PHP&#160;DEOBFUSCATOR</text>
+</g>
+</svg>

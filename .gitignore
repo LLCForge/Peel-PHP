@@ -1,0 +1,32 @@
+# bağımlılıklar ve derleme çıktısı
+node_modules/
+dist/
+.vite/
+
+# loglar
+*.log
+npm-debug.log*
+
+# editör / işletim sistemi
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# yerel araç ve ortam dosyaları
+.env
+.env.*
+!.env.example
+
+# geçici analiz dosyaları (çözülecek örnekleri depoya koyma)
+tmp-*
+*.peel-out.js
+
+# benchmark çıktıları
+test/bench-out/
+peel-sbom.cdx.json
+test/.regress.json
+
+# kullanıcının gerçek örnekleri: yalnızca yerel testte
+test/samples/

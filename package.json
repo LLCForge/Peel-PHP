@@ -1,0 +1,54 @@
+{
+  "name": "peel-php",
+  "version": "0.1.0",
+  "description": "Open-source PHP deobfuscator that runs in your browser. Your code never leaves your device.",
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "peel-php": "bin/peel-php.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LLCForge/Peel-PHP.git"
+  },
+  "homepage": "https://github.com/LLCForge/Peel-PHP#readme",
+  "keywords": [
+    "deobfuscator",
+    "php",
+    "webshell",
+    "malware-analysis",
+    "security",
+    "php-wasm",
+    "reverse-engineering"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "node test/run.js && node test/all.js",
+    "bench": "node test/bench.js"
+  },
+  "dependencies": {
+    "@codemirror/commands": "^6.11.1",
+    "@codemirror/lang-php": "^6.0.2",
+    "@codemirror/language": "^6.13.1",
+    "@codemirror/search": "^6.7.2",
+    "@codemirror/state": "^6.7.6",
+    "@codemirror/view": "^6.43.15",
+    "@fontsource-variable/inter": "^5.3.0",
+    "@fontsource-variable/jetbrains-mono": "^5.3.0",
+    "@lezer/highlight": "^1.2.5",
+    "@php-wasm/node": "^3.1.64",
+    "@php-wasm/universal": "^3.1.64",
+    "@php-wasm/web": "^3.1.64",
+    "@prettier/plugin-php": "^0.26.0",
+    "php-parser": "^3.7.0",
+    "prettier": "^3.10.1"
+  },
+  "devDependencies": {
+    "vite": "^6.4.6"
+  }
+}

@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+<defs>
+  <clipPath id="tc"><path d="M 132 250 Q 132 150 232 150 L 792 150 Q 892 150 892 250 L 892 750 L 732 910 L 232 910 Q 132 910 132 810 Z"/></clipPath>
+  <mask id="mono">
+    <rect width="1024" height="1024" fill="black"/>
+    <path d="M 132 250 Q 132 150 232 150 L 792 150 Q 892 150 892 250 L 892 750 L 732 910 L 232 910 Q 132 910 132 810 Z" fill="white"/>
+    <path d="M 392 442 L 470 505 L 392 568" fill="none" stroke="black" stroke-width="52" stroke-linecap="round" stroke-linejoin="round"/><path d="M 632 442 L 554 505 L 632 568" fill="none" stroke="black" stroke-width="52" stroke-linecap="round" stroke-linejoin="round"/><path d="M 452 660 L 572 660" fill="none" stroke="black" stroke-width="52" stroke-linecap="round"/>
+    <path d="M 732 910 L 892 750" stroke="black" stroke-width="10"/>
+    <path d="M 732 910 L 892 750 Q 872 820 732 750 Q 734 900 732 910 Z" fill="black"/>
+  </mask>
+</defs>
+<rect width="1024" height="1024" fill="#777BB4" mask="url(#mono)"/>
+</svg>
